@@ -62,21 +62,27 @@ All administration, including the creation of users, groups, OUs, and GPOs, is a
 <details>
 <summary>Prerequisites</summary>
  
--
--
--
--
+- Physical host with at least 16GO of RAM ( the 3 combined VMs require ~ 8 Go)
+- VMWare Workstation installed
+- Windows Server 2022 Evaluation ISO 
+- Windows 10/11 ISO for the client machine
 
 </details>
 
 <br/>
 
 <details>
-<summary>Step 1 -</summary> 
-
+<summary>Step 1 - Install and configure networking on DC01 </summary> 
+<summary>Step 2 - Promote to Domain Controller </summary>
+<summary>Step 3 - Post-installation validation </summary>
+<summary>Step 4 - Create the OU structure </summary>
+<summary>Step 5 - Create users and groups </summary>
+<summary>Step 6 - Deploy DC02 and verify replication </summary>
+<summary>Step 7 - Join the client workstation to the domain </summary>
 <br/>
 
 </details>
+
 
 <br/>
 <br/>
