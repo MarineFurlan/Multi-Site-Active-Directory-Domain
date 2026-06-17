@@ -73,12 +73,44 @@ All administration, including the creation of users, groups, OUs, and GPOs, is a
 
 <details>
 <summary>Step 1 - Install and configure networking on DC01 </summary> 
+</details>
+
+<br/>
+
+<details>
 <summary>Step 2 - Promote to Domain Controller </summary>
+</details>
+
+<br/>
+
+<details>
 <summary>Step 3 - Post-installation validation </summary>
+</details>
+
+<br/>
+
+<details>
 <summary>Step 4 - Create the OU structure </summary>
+</details>
+
+<br/>
+
+<details>
 <summary>Step 5 - Create users and groups </summary>
+</details>
+
+<br/>
+
+<details>
 <summary>Step 6 - Deploy DC02 and verify replication </summary>
+</details>
+
+<br/>
+
+<details>
 <summary>Step 7 - Join the client workstation to the domain </summary>
+</details>
+
 <br/>
 
 </details>
