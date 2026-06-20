@@ -27,14 +27,16 @@ All administration, including the creation of users, groups, OUs, and GPOs, is a
 <br/>
 
 
-## 2. Design Decisions   
+## 2. Objectives 
 <br/>
 
-| Components                                | Justification                                                                                                                                                   |
-|-------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **PowerShell**                            | Automation of tasks and Windows compatibility                                                                                                                   | 
-| **Azure AD Connect**                      | Testing hybrid replication for better availability                                                                                                              |
-| **2 Domain Controllers**                  | High Availability principe                                                                                                                                      |
+| Professional requirement                  | What this lab demonstrates                          |
+|-------------------------------------------|-----------------------------------------------------|
+| **Windows infrastructure administration** | Full AD DS domain deployment from scratch           | 
+| **Active Directory proficiency**          | OU structure, user/group management, delegation     |
+| **GPO and security management*            | Hardening GPOs tested and documented                |
+| **Automation / process industrialization**| Reusable PowerShell scripts, zero manual action     |
+| **Hybrid environment / Microsoft 365**    | Azure AD synchronization                            |
 
 <br/>
 <br/>
@@ -43,13 +45,50 @@ All administration, including the creation of users, groups, OUs, and GPOs, is a
 ## 3. Architecture Overview
 <a name="#3-architecture-overview"></a> 
 
-| Components        | AWS Service                                                                         | Role                                                                                                  | 
-|-------------------|-------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
-| ** **             |                                                                                     |                                                                                                       |
-| **Security**      |                                                                                     |                                                                                                       | 
-| **Routing**       |                                                                                     |                                                                                                       |                       
 
+<details>
+<summary>Virtual Machines Topology</summary>
+ 
+<br/>
+ 
+| Virtual machine   | Role                             | RAM     | Storage    | OS   |  IP                    | 
+|-------------------|----------------------------------|---------|------------|------|------------------------|
+| DC01              | Primary Domain Controller        |         |            |      |                        |
+| DC02              | Secondary Domain Controller      |         |            |      |                        |
 
+</details>
+ 
+<br/>
+
+<details>
+<summary>Network Plan</summary>
+ 
+<br/>
+
+| Parameter         | Value             | 
+|-------------------|-------------------|
+| Lab network       | [Subnet]          |
+| Domain name       | xxxx.local        |
+| NetBIOS           |                   |
+
+</details>
+
+<br/>
+
+<details>
+<summary>Organizational unit structure</summary>
+ 
+<br/>
+
+```bash
+domain.local
+  ├── _ADMINISTRATION
+  ├── SERVERS
+  ├── USERS
+  └── GROUPS
+```
+
+</details>
 <br/>
 <br/>
 <br/>
