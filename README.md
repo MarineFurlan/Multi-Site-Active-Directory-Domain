@@ -51,10 +51,11 @@ All administration, including the creation of users, groups, OUs, and GPOs, is a
  
 <br/>
  
-| Virtual machine   | Role                             | RAM     | Storage    | OS   |  IP                    | 
-|-------------------|----------------------------------|---------|------------|------|------------------------|
-| DC01              | Primary Domain Controller        |         |            |      |                        |
-| DC02              | Secondary Domain Controller      |         |            |      |                        |
+| Virtual machine   | Role                             | RAM     | Storage    |   IP                    | 
+|-------------------|----------------------------------|---------|------------|-------------------------|
+| DC01              | Primary Domain Controller        | 4Go     | 60 Go      | 192.168.100.10          |
+| DC02              | Secondary Domain Controller      | 4Go     | 60 Go      | 192.168.100.11          |
+| WIN10             | Client                           | 2Go     | 40 Go      | Auto                    |
 
 </details>
  
@@ -65,11 +66,10 @@ All administration, including the creation of users, groups, OUs, and GPOs, is a
  
 <br/>
 
-| Parameter         | Value             | 
-|-------------------|-------------------|
-| Lab network       | [Subnet]          |
-| Domain name       | xxxx.local        |
-| NetBIOS           |                   |
+| Parameter         | Value                           | 
+|-------------------|---------------------------------|
+| Lab network       | 192.168.100.0 - 255.255.255.0   |
+| Domain name       | ADlab.local                     |
 
 </details>
 
@@ -191,7 +191,7 @@ The estimate below is based on the [AWS Pricing Calculator](https://calculator.a
 <a name="#8-improvements--next-steps"></a>
 
 Potential enhancements to the infrastructure include:  
-- 
+- NET-Bios is too old ??
 - 
 - 
  
