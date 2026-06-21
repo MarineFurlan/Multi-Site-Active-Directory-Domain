@@ -109,10 +109,50 @@ domain.local
 <br/>
 
 <details>
-<summary>Step 1 - </summary> 
+<summary>Step 1 - Create local network </summary> 
 </details>
 
+<br/>
 
+<details>
+<summary>Step 2 - Create and configure primary domain controller DC01 </summary> 
+</details>
+
+<br/>
+
+<details>
+<summary>Step 3  - Install Active Directory and configure local domain </summary> 
+</details>
+
+<br/>
+
+<details>
+<summary>Step 4 - Create AD forest structure </summary> 
+</details>
+
+<br/>
+
+<details>
+<summary>Step 5 - Create and configure secondary domain controller DC02 </summary> 
+</details>
+
+<br/>
+
+<details>
+<summary>Step 6 - Create and configure client </summary> 
+</details>
+
+<br/>
+
+<details>
+<summary>Step 7 - Establish Group Policy Objects </summary> 
+</details>
+
+<br/>
+
+<details>
+<summary>Step 8 - Synchronize local Active Directory with Azure ADConnect cloud </summary> 
+</details>
 
 <br/>
 <br/>
