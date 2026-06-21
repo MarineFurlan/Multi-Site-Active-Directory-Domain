@@ -53,9 +53,9 @@ All administration, including the creation of users, groups, OUs, and GPOs, is a
  
 | Virtual machine   | Role                             | RAM     | Storage    |   IP                    | 
 |-------------------|----------------------------------|---------|------------|-------------------------|
-| DC01              | Primary Domain Controller        | 4Go     | 60 Go      | 192.168.100.10          |
-| DC02              | Secondary Domain Controller      | 4Go     | 60 Go      | 192.168.100.11          |
-| WIN10             | Client                           | 2Go     | 40 Go      | Auto                    |
+| DC01              | Primary Domain Controller        | 2Go     | 20 Go      | 192.168.100.10          |
+| DC02              | Secondary Domain Controller      | 2Go     | 20 Go      | 192.168.100.11          |
+| WIN10             | Client                           | 1Go     | 10 Go      | Auto                    |
 
 </details>
  
