@@ -162,11 +162,10 @@ Install-WindowsFeature -Name AD-Domain-Services, Dns -IncludeManagementTools
 
   ```bash
 Install-ADDSForest `
-  -DomainName 'lab.local' `               # No special character, stick to lowercase letters is good practice
-  -ForestMode 'WinThreshold' `            # Latest version
-  -DomainMode 'WinThreshold' `
-  -Force
-                                          # No "SafeModeAdministratorPassword" command to avoid leaking password (no hardcoding, no saving or no giving visibility)
+-DomainName 'lab.local' `
+-ForestMode 'WinThreshold' `
+-DomainMode 'WinThreshold' `
+-Force                                         
 ```
 
 </details>
