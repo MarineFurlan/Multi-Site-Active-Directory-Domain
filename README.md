@@ -148,12 +148,27 @@ Rename-Computer -NewName 'DC01' -Restart
 
 <details>
 <summary>Step 3  - Install Active Directory and configure local domain </summary> 
+
+ ```bash
+Install-WindowsFeature -Name AD-Domain-Services, Dns -IncludeManagementTools
+```
+
 </details>
 
 <br/>
 
 <details>
 <summary>Step 4 - Create AD forest structure </summary> 
+
+  ```bash
+Install-ADDSForest `
+  -DomainName 'lab.local' `               # No special character, stick to lowercase letters is good practice
+  -ForestMode 'WinThreshold' `            # Latest version
+  -DomainMode 'WinThreshold' `
+  -Force
+                                          # No "SafeModeAdministratorPassword" command to avoid leaking password (no hardcoding, no saving or no giving visibility)
+```
+
 </details>
 
 <br/>
