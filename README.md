@@ -158,7 +158,7 @@ Install-WindowsFeature -Name AD-Domain-Services, Dns -IncludeManagementTools
 <br/>
 
 <details>
-<summary>Step 4 - Create AD forest structure </summary> 
+<summary>Step 4 - Create AD forest structure and validate </summary> 
 
   ```powershell
 Install-ADDSForest `
@@ -166,6 +166,14 @@ Install-ADDSForest `
 -ForestMode 'WinThreshold' `
 -DomainMode 'WinThreshold' `
 -Force                                         
+```
+
+<br/>
+
+  ```powershell
+dcdiag /test:services
+dcdiag /test:advertising
+netdom query fsmo                                           
 ```
 
 </details>
