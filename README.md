@@ -106,13 +106,11 @@ domain.local
 - Windows Server Evaluation ISO (free, 180 days)
 </details>
 
-<br/>
 
 <details>
 <summary>Step 1 - Create local network </summary> 
 </details>
 
-<br/>
 
 <details>
 <summary>Step 2 - Create and configure primary domain controller DC01 </summary> 
@@ -144,25 +142,21 @@ Rename-Computer -NewName 'DC01' -Restart
 ```
 </details>
 
-<br/>
 
 <details>
 <summary>Step 3  - Install Active Directory and configure local domain </summary> 
+ 
+<br/>
 
  ```powershell
 Install-WindowsFeature -Name AD-Domain-Services, Dns -IncludeManagementTools
 ```
 
-</details>
-
 <br/>
 
-<details>
-<summary>Step 4 - Create AD forest structure and validate </summary> 
-
-  ```powershell
+ ```powershell
 Install-ADDSForest `
--DomainName 'lab.local' `
+-DomainName 'adlab.local' `
 -ForestMode 'WinThreshold' `
 -DomainMode 'WinThreshold' `
 -Force                                         
@@ -175,28 +169,77 @@ dcdiag /test:services
 dcdiag /test:advertising
 netdom query fsmo                                           
 ```
-
 </details>
 
-<br/>
 
 <details>
-<summary>Step 5 - Create and configure secondary domain controller DC02 </summary> 
-</details>
+<summary>Step 4 - Create and configure secondary domain controller DC02 </summary> 
+
+
+ <br/>
+
+1. Create VM
+ 
+ <br/>
+ 
+2. Give it a fixed IP
+```powershell
+New-NetIPAddress -InterfaceAlias 'Ethernet0' -IPAddress 192.168.100.11 -PrefixLength 24
+```
+
+3. Restart VM
+```powershell
+Restart-Computer
+```
+
+4. Use DC01 as dns server
+```powershell
+Set-DnsClientServerAddress -InterfaceAlias 'Ethernet0' -ServerAddresses 192.168.100.10
+```
+
+5. Rename VM
+```powershell
+Rename-Computer -NewName 'DC02' -Restart
+```
+
+6. Install Active Directory and configure local domain </summary> 
+
+ ```powershell
+Install-WindowsFeature -Name AD-Domain-Services, Dns -IncludeManagementTools
+```
+
+7. Promote as secondary domain controller </summary> 
+
+  ```powershell
+Install-ADDSDomainController`
+-DomainName 'adlab.local' `
+-Credential (Get-Credential ADLAB\Administrator)
+-Force                                         
+```
 
 <br/>
+
+  ```powershell
+repadmin /showrepl
+repadmin /replsummary                                        
+```
+
+</details>
+
+<details>
+<summary>Step 5 - Create AD forest structure and validate </summary>
+</details>
+
 
 <details>
 <summary>Step 6 - Create and configure client </summary> 
 </details>
 
-<br/>
 
 <details>
 <summary>Step 7 - Establish Group Policy Objects </summary> 
 </details>
 
-<br/>
 
 <details>
 <summary>Step 8 - Synchronize local Active Directory with Azure ADConnect cloud </summary> 
