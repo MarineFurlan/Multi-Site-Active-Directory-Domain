@@ -116,6 +116,32 @@ domain.local
 
 <details>
 <summary>Step 2 - Create and configure primary domain controller DC01 </summary> 
+
+ <br/>
+
+1. Create VM
+ 
+ <br/>
+ 
+2. Give it a fixed IP
+```bash
+New-NetIPAddress -InterfaceAlias 'Ethernet0' -IPAddress 192.168.100.10 -PrefixLength 24
+```
+
+3. Restart VM
+```bash
+Restart-Computer
+```
+
+4. Use itself as dns server
+```bash
+Set-DnsClientServerAddress -InterfaceAlias 'Ethernet0' -ServerAddresses 127.0.0.1
+```
+
+5. Rename VM
+```bash
+Rename-Computer -NewName 'DC01' -Restart
+```
 </details>
 
 <br/>
