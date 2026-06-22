@@ -124,22 +124,22 @@ domain.local
  <br/>
  
 2. Give it a fixed IP
-```bash
+```powershell
 New-NetIPAddress -InterfaceAlias 'Ethernet0' -IPAddress 192.168.100.10 -PrefixLength 24
 ```
 
 3. Restart VM
-```bash
+```powershell
 Restart-Computer
 ```
 
 4. Use itself as dns server
-```bash
+```powershell
 Set-DnsClientServerAddress -InterfaceAlias 'Ethernet0' -ServerAddresses 127.0.0.1
 ```
 
 5. Rename VM
-```bash
+```powershell
 Rename-Computer -NewName 'DC01' -Restart
 ```
 </details>
@@ -149,7 +149,7 @@ Rename-Computer -NewName 'DC01' -Restart
 <details>
 <summary>Step 3  - Install Active Directory and configure local domain </summary> 
 
- ```bash
+ ```powershell
 Install-WindowsFeature -Name AD-Domain-Services, Dns -IncludeManagementTools
 ```
 
@@ -160,7 +160,7 @@ Install-WindowsFeature -Name AD-Domain-Services, Dns -IncludeManagementTools
 <details>
 <summary>Step 4 - Create AD forest structure </summary> 
 
-  ```bash
+  ```powershell
 Install-ADDSForest `
 -DomainName 'lab.local' `
 -ForestMode 'WinThreshold' `
