@@ -44,7 +44,25 @@ All administration, including the creation of users, groups, OUs, and GPOs, is a
 
 ## 3. Architecture Overview
 <a name="#3-architecture-overview"></a> 
+<br/>
+<img width="4821" height="4869" alt="Lab_forest" src="https://github.com/user-attachments/assets/8312b96c-930a-4769-86ff-b1c51a1922b2" />
 
+<br/>
+
+&emsp;&emsp;This lab simulates a French company operating across multiple geographic sites, each with its own specialization.\
+The Angoulême office focuses on R&D, while the Bordeaux office is centered around Data and Cybersecurity. The company may also expand internationally in the future. \
+<br/>
+Given this context, I chose a hybrid OU structure with location at the top level and departments underneath. \
+Placing sites at the top level allows GPOs and admin delegation to be applied per location.\
+Different antennas of the same company can have different servers, different security policies, and different local IT administrators without those settings interfering with each other. If the company opens a new site abroad, it simply becomes a new top-level OU with its own structure underneath, without touching anything else. \
+<br/>
+Departments sit underneath each site for fine-grained access control. \
+A Data engineer in Bordeaux and a Data engineer in a future London office may have the same departmental access rights, but they are managed independently by their respective local admins. \
+<br/>
+Groups are organized by purpose rather than by location or department. GRP_IT grants access to servers and administration tools, GRP_DATA grants access to the data warehouse, GRP_ACCOUNTING grants access to accounting files, and so on. \
+This separation between OUs (where things are) and groups (what things can do) follows Active Directory best practices and makes access management scalable, adding a new employee to the right group immediately grants them the correct permissions, regardless of which site they belong to.
+
+<br/>
 
 <details>
 <summary>Virtual Machines Topology</summary>
