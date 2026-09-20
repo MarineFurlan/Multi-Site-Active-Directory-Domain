@@ -1,34 +1,31 @@
 {
   "employees": [
     {
+      "id": "EMP0001",
       "first_name": "Jean",
       "last_name": "Dupont",
-      "username": "jdupont",
       "site": "Angouleme",
       "department": "IT",
       "job_title": "Software_engineer",
-      "manager": null,
-      "email": "jdupont@novera.fr"
+      "manager": null
     },
     {
+      "id": "EMP0002",
       "first_name": "Marie",
       "last_name": "Martin",
-      "username": "mmartin",
       "site": "Angouleme",
       "department": "R&D",
       "job_title": "Research_scientist",
-      "manager": null,
-      "email": "mmartin@novera.fr"
+      "manager": null
     },
     {
+      "id": "EMP0003",
       "first_name": "Charles",
       "last_name": "Lacroix",
-      "username": "clacroix",
       "site": "Bordeaux",
       "department": "Cybersecurity",
       "job_title": "RSSI",
-      "manager": null,
-      "email": "clacroix@novera.fr"
+      "manager": null
     }
   ]
 }
