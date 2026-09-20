@@ -7,7 +7,7 @@
       "site": "Angouleme",
       "department": "IT",
       "job_title": "Software_engineer",
-      "manager": false,
+      "manager": null,
       "email": "jdupont@novera.fr"
     },
     {
@@ -17,7 +17,7 @@
       "site": "Angouleme",
       "department": "R&D",
       "job_title": "Research_scientist",
-      "manager": false,
+      "manager": null,
       "email": "mmartin@novera.fr"
     },
     {
@@ -27,7 +27,7 @@
       "site": "Bordeaux",
       "department": "Cybersecurity",
       "job_title": "RSSI",
-      "manager": true,
+      "manager": null,
       "email": "clacroix@novera.fr"
     }
   ]
