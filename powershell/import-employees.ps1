@@ -6,18 +6,16 @@ $json = Get-Content "./data/employees.json" -Encoding UTF8
 $data = $json | ConvertFrom-Json
 
 
-
 # ============================================================
 # USERNAME GENERATION
 # ============================================================
+# Add a base username to each employee
 $employees = foreach ($employee in $data.employees) {
     $firstletter = $employee.first_name.Substring(0,1)
     $username = ($firstletter+$employee.last_name).ToLower().Normalize("FormD") -replace "\p{M}"
     $employee | Add-Member -MemberType NoteProperty -Name "username" -Value $username
     $employee
 }
-
-
 
 
 # ============================================================
@@ -30,20 +28,28 @@ $collisions = $employees | Group-Object -Property username | Where-Object Count 
 # ============================================================
 # COLLISION RESOLUTION
 # ============================================================
-
+# Each employee having the same username will have a new one using number iterations
 foreach ($collision in $collisions) {
     $counter = 0
     $sortedCollision = $collision.Group | Sort-Object -Property id
 
         #Extract each employee from sortedCollision and increment username
-        foreach ($collidingEmployee in $sortedCollision){
+        foreach ($employee in $sortedCollision){
             $counter++
             $usernameSuffix = "{0:D2}" -f $counter
-            $newUsername = "$($collidingEmployee.username)$usernameSuffix"
-            $collidingEmployee.username = $newUsername
+            $newUsername = "$($employee.username)$usernameSuffix"
+            $employee.username = $newUsername
     }
 }
+# The variable $employees now contains each employee object with resolved usernames
 
+# ============================================================
+# EMAIL GENERATION
+# ============================================================
+foreach ($employee in $employees) {
+    $email = "$($employee.username)@novera.fr"
+    $employee | Add-Member -MemberType NoteProperty -Name "email" -Value $email
+}
 
 # ============================================================
 # TESTS
@@ -92,7 +98,7 @@ $remaining_collisions = $employees |
     Where-Object Count -GT 1
 
 if ($remaining_collisions -eq $null) {
-    Write-Output "[PASS] There is no duplicated username"
+    Write-Output "[PASS] There is no duplicated username" ""
 }
 else {
     Write-Output "[FAIL] List of employees with the same username:" ""
@@ -105,6 +111,47 @@ else {
     $failed_tests++
 }
 
+# ------------------------------------------------------------
+# Email presence
+# ------------------------------------------------------------
+Write-Output "TESTING EMAIL PRESENCE FOR EACH EMPLOYEE ..."
+$no_emails = foreach ($employee in $employees) {
+    if ($employee.email -eq $null) {
+        Write-Output $employee.id
+    }
+}
+
+if ($no_emails -eq $null){
+    Write-Output "[PASS] Every employee has an email" ""
+}
+else {
+Write-Output "[FAIL] List of employees without email: $no_emails" ""
+$failed_tests++
+}
+
+
+# ------------------------------------------------------------
+# Email consistency
+# ------------------------------------------------------------
+Write-Output "TESTING EMAIL CONSISTENCY FOR EACH EMPLOYEE ..."
+$invalid_emails = foreach ($employee in $employees){
+    if($employee.email -ne "$($employee.username)@novera.fr" ) {
+        Write-Output "$($employee.id) - $($employee.username) - $($employee.email) | "
+    }
+}
+
+if ($invalid_emails -eq $null) {
+       Write-Output "[PASS] Every employee has a valid email" ""
+    }
+else {
+        Write-Output "[FAIL] List of employees without a valid email: $invalid_emails" ""
+        $failed_tests++
+}
+
+
+# ------------------------------------------------------------
+# Tests overview
+# ------------------------------------------------------------
 Write-Output "Failed test count : $failed_tests"
 if ($failed_tests -gt 0){
     exit 1
