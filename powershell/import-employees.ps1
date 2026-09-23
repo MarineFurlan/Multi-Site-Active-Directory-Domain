@@ -12,7 +12,18 @@ $roles = $roles_json | ConvertFrom-Json
 # ============================================================
 # USERNAME GENERATION
 # ============================================================
-# Add a base username to each employee
+<#
+Add a base username to each employee.
+Example :
+id          : EMP0000
+first_name  : Marine
+last_name   : Furlan
+site        : Angoulême
+department  : IT
+job_title   : Software Engineer
+username    : mfurlan
+#>
+
 $employees = foreach ($employee in $data.employees) {
     $firstletter = $employee.first_name.Substring(0,1)
     $username = ($firstletter+$employee.last_name).ToLower().Normalize("FormD") -replace "\p{M}"
@@ -31,7 +42,17 @@ $collisions = $employees | Group-Object -Property username | Where-Object Count 
 # ============================================================
 # COLLISION RESOLUTION
 # ============================================================
-# Each employee having the same username will have a new one using number iterations
+<# Each employee having the same username will have a new one using number iterations
+Example :
+id          : EMP0000
+first_name  : Marine
+last_name   : Furlan
+site        : Angoulême
+department  : IT
+job_title   : Software Engineer
+username    : mfurlan01
+#>
+
 foreach ($collision in $collisions) {
     $counter = 0
     $sortedCollision = $collision.Group | Sort-Object -Property id
@@ -49,6 +70,18 @@ foreach ($collision in $collisions) {
 # ============================================================
 # EMAIL GENERATION
 # ============================================================
+<# Each employee having the same username will have a new one using number iterations
+Example :
+id          : EMP0000
+first_name  : Marine
+last_name   : Furlan
+site        : Angoulême
+department  : IT
+job_title   : Software Engineer
+username    : mfurlan01
+email       : mfurlan01@novera.fr
+#>
+
 foreach ($employee in $employees) {
     $email = "$($employee.username)@novera.fr"
     $employee | Add-Member -MemberType NoteProperty -Name "email" -Value $email
@@ -57,6 +90,19 @@ foreach ($employee in $employees) {
 # ============================================================
 # MANAGER DETECTION
 # ============================================================
+<#
+Example :
+id          : EMP0000
+first_name  : Marine
+last_name   : Furlan
+site        : Angoulême
+department  : IT
+job_title   : Software Engineer
+username    : mfurlan01
+email       : mfurlan01@novera.fr
+is_manager  : True
+#>
+
 foreach ($employee in $employees) {
     if ($employee.job_title -in $roles.manager_job_titles) {
         $employee | Add-Member -MemberType NoteProperty -Name "is_manager" -Value $true
@@ -66,10 +112,50 @@ foreach ($employee in $employees) {
     }
 }
 
+# ============================================================
+# IT ADMIN DETECTION
+# ============================================================
+<#
+Example :
+id          : EMP0000
+first_name  : Marine
+last_name   : Furlan
+site        : Angoulême
+department  : IT
+job_title   : Software Engineer
+username    : mfurlan01
+email       : mfurlan01@novera.fr
+is_manager  : True
+is_it_admin : False
+#>
+
+foreach ($employee in $employees) {
+    if ($employee.job_title -in $roles.it_admin_job_titles) {
+        $employee | Add-Member -MemberType NoteProperty -Name "is_it_admin" -Value $true
+    }
+    else {
+        $employee | Add-Member -MemberType NoteProperty -Name "is_it_admin" -Value $false
+    }
+}
+
 
 # ============================================================
 # DEPARTMENT GROUP GENERATION
 # ============================================================
+<#
+Example :
+id          : EMP0000
+first_name  : Marine
+last_name   : Furlan
+site        : Angoulême
+department  : IT
+job_title   : Software Engineer
+username    : mfurlan01
+email       : mfurlan01@novera.fr
+is_manager  : True
+is_it_admin : False
+dpt_grp     : GG_Angouleme_IT
+#>
 foreach ($employee in $employees){
     if ($employee.department -eq "Cybersecurity") {
         $dpt_grp = "GG_$($employee.department)"
@@ -83,6 +169,21 @@ foreach ($employee in $employees){
 # ============================================================
 # MANAGER GROUP GENERATION
 # ============================================================
+<#
+Example :
+id          : EMP0000
+first_name  : Marine
+last_name   : Furlan
+site        : Angoulême
+department  : IT
+job_title   : Software Engineer
+username    : mfurlan01
+email       : mfurlan01@novera.fr
+is_manager  : True
+is_it_admin : False
+dpt_grp     : GG_Angouleme_IT
+mgmt_grp    : GG_Angouleme_IT_Managers
+#>
 foreach ($employee in $employees){
     if ($employee.is_manager -eq $true) {
         $mgmt_grp = "$($employee.dpt_grp)_Managers"
@@ -93,6 +194,35 @@ foreach ($employee in $employees){
     $employee | Add-Member -MemberType NoteProperty -Name "mgmt_grp" -Value $mgmt_grp
 }
 
+
+# ============================================================
+# IT ADMIN GROUP GENERATION
+# ============================================================
+<#
+Example :
+id          : EMP0000
+first_name  : Marion
+last_name   : Furlan
+site        : Angoulême
+department  : IT
+job_title   : Software Engineer
+username    : mfurlan02
+email       : mfurlan02@novera.fr
+is_manager  : False
+is_it_admin : True
+dpt_grp     : GG_Angouleme_IT
+mgmt_grp    : GG_Angouleme_IT_Admins
+#>
+
+foreach ($employee in $employees){
+    if ($employee.is_it_admin -eq $true) {
+        $admin_grp = "$($employee.dpt_grp)_Admins"
+    }
+    else {
+        $admin_grp = $null
+    }
+    $employee | Add-Member -MemberType NoteProperty -Name "admin_grp" -Value $admin_grp
+}
 
 # ============================================================
 # OU TARGET GENERATION

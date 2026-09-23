@@ -6,5 +6,9 @@
         "RD Manager",
         "Data Manager",
         "Cybersecurity Manager"
+    ],
+    "it_admin_job_titles": [
+        "Systems Administrator",
+        "Network Administrator"
     ]
 }
