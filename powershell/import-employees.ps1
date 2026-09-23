@@ -51,6 +51,18 @@ foreach ($employee in $employees) {
     $employee | Add-Member -MemberType NoteProperty -Name "email" -Value $email
 }
 
+
+# ============================================================
+# OU TARGET GENERATION
+# ============================================================
+
+$domain_dn = "DC=novera,DC=fr"
+
+foreach ($employee in $employees) {
+    $employee | Add-Member -MemberType NoteProperty -Name "ou_dn" -Value "OU=$($employee.department),OU=Users,OU=$($employee.site),$domain_dn"
+}
+
+
 # ============================================================
 # TESTS
 # ============================================================
@@ -148,6 +160,24 @@ else {
         $failed_tests++
 }
 
+# ------------------------------------------------------------
+# OU target presence
+# ------------------------------------------------------------
+Write-Output "TESTING OU TARGET FOR EACH EMPLOYEE ..."
+
+$no_ou_targets = foreach ($employee in $employees) {
+    if ($employee.ou_dn -eq $null) {
+        Write-Output $employee.id
+    }
+}
+
+if ($no_ou_targets -eq $null) {
+    Write-Output "[PASS] Every employee has an OU target" ""
+}
+else {
+    Write-Output "[FAIL] List of employees without an OU target: $no_ou_targets" ""
+    $failed_tests++
+}
 
 # ------------------------------------------------------------
 # Tests overview
