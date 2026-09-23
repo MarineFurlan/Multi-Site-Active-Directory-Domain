@@ -105,12 +105,12 @@ foreach ($employee in $employees) {
 # ============================================================
 <#
 Example :
-id          : EMP0000
+id          : EMP9999
 [...]
 department  : IT
-job_title   : Software Engineer
+job_title   : Systems Administrator
 [...]
-is_it_admin : False
+is_it_admin : True
 #>
 
 foreach ($employee in $employees) {
