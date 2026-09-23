@@ -18,9 +18,7 @@ Example :
 id          : EMP0000
 first_name  : Marine
 last_name   : Furlan
-site        : Angoulême
-department  : IT
-job_title   : Software Engineer
+[...]
 username    : mfurlan
 #>
 
@@ -47,9 +45,7 @@ Example :
 id          : EMP0000
 first_name  : Marine
 last_name   : Furlan
-site        : Angoulême
-department  : IT
-job_title   : Software Engineer
+[...]
 username    : mfurlan01
 #>
 
@@ -73,11 +69,7 @@ foreach ($collision in $collisions) {
 <# Each employee having the same username will have a new one using number iterations
 Example :
 id          : EMP0000
-first_name  : Marine
-last_name   : Furlan
-site        : Angoulême
-department  : IT
-job_title   : Software Engineer
+[...]
 username    : mfurlan01
 email       : mfurlan01@novera.fr
 #>
@@ -92,14 +84,10 @@ foreach ($employee in $employees) {
 # ============================================================
 <#
 Example :
-id          : EMP0000
-first_name  : Marine
-last_name   : Furlan
-site        : Angoulême
-department  : IT
-job_title   : Software Engineer
-username    : mfurlan01
-email       : mfurlan01@novera.fr
+id          : EMP3333
+[...]
+job_title   : Data Manager
+[...]
 is_manager  : True
 #>
 
@@ -118,14 +106,10 @@ foreach ($employee in $employees) {
 <#
 Example :
 id          : EMP0000
-first_name  : Marine
-last_name   : Furlan
-site        : Angoulême
+[...]
 department  : IT
 job_title   : Software Engineer
-username    : mfurlan01
-email       : mfurlan01@novera.fr
-is_manager  : True
+[...]
 is_it_admin : False
 #>
 
@@ -145,15 +129,10 @@ foreach ($employee in $employees) {
 <#
 Example :
 id          : EMP0000
-first_name  : Marine
-last_name   : Furlan
+[...]
 site        : Angoulême
 department  : IT
-job_title   : Software Engineer
-username    : mfurlan01
-email       : mfurlan01@novera.fr
-is_manager  : True
-is_it_admin : False
+[...]
 dpt_grp     : GG_Angouleme_IT
 #>
 foreach ($employee in $employees){
@@ -171,18 +150,16 @@ foreach ($employee in $employees){
 # ============================================================
 <#
 Example :
-id          : EMP0000
-first_name  : Marine
-last_name   : Furlan
-site        : Angoulême
-department  : IT
-job_title   : Software Engineer
-username    : mfurlan01
-email       : mfurlan01@novera.fr
+id          : EMP3333
+[...]
+site        : Bordeaux
+department  : Data
+job_title   : Data Manager
+[...]
 is_manager  : True
-is_it_admin : False
-dpt_grp     : GG_Angouleme_IT
-mgmt_grp    : GG_Angouleme_IT_Managers
+[...]
+dpt_grp     : GG_Bordeaux_Data
+mgmt_grp    : GG_Bordeaux_Data_Managers
 #>
 foreach ($employee in $employees){
     if ($employee.is_manager -eq $true) {
@@ -201,14 +178,11 @@ foreach ($employee in $employees){
 <#
 Example :
 id          : EMP9999
-first_name  : Marion
-last_name   : Furlan
+[...]
 site        : Angoulême
 department  : IT
-job_title   : Software Engineer
-username    : mfurlan02
-email       : mfurlan02@novera.fr
-is_manager  : False
+job_title   : Systems Administrator
+[...]
 is_it_admin : True
 dpt_grp     : GG_Angouleme_IT
 mgmt_grp    : GG_Angouleme_IT_Admins
