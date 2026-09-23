@@ -5,6 +5,9 @@
 $json = Get-Content "./data/employees.json" -Encoding UTF8
 $data = $json | ConvertFrom-Json
 
+$roles_json = Get-Content "./data/roles.json" -Encoding UTF8
+$roles = $roles_json | ConvertFrom-Json
+
 
 # ============================================================
 # USERNAME GENERATION
