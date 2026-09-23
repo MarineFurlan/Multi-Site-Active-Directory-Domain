@@ -54,6 +54,20 @@ foreach ($employee in $employees) {
     $employee | Add-Member -MemberType NoteProperty -Name "email" -Value $email
 }
 
+# ============================================================
+# MANAGER DETECTION
+# ============================================================
+foreach ($employee in $employees) {
+    if ($employee.job_title -in $roles.manager_job_titles) {
+        $employee | Add-Member -MemberType NoteProperty -Name "is_manager" -Value $true
+    }
+    else {
+        $employee | Add-Member -MemberType NoteProperty -Name "is_manager" -Value $false
+    }
+}
+
+Write-Output $employees | Where-Object is_manager -eq $true
+
 
 # ============================================================
 # OU TARGET GENERATION
