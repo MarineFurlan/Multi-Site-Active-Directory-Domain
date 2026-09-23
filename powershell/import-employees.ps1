@@ -66,7 +66,32 @@ foreach ($employee in $employees) {
     }
 }
 
-Write-Output $employees | Where-Object is_manager -eq $true
+
+# ============================================================
+# DEPARTMENT GROUP GENERATION
+# ============================================================
+foreach ($employee in $employees){
+    if ($employee.department -eq "Cybersecurity") {
+        $dpt_grp = "GG_$($employee.department)"
+    }
+    else {
+        $dpt_grp = "GG_$($employee.site)_$($employee.department)"
+    }
+    $employee | Add-Member -MemberType NoteProperty -Name "dpt_grp" -Value $dpt_grp
+}
+
+# ============================================================
+# MANAGER GROUP GENERATION
+# ============================================================
+foreach ($employee in $employees){
+    if ($employee.is_manager -eq $true) {
+        $mgmt_grp = "$($employee.dpt_grp)_Managers"
+    }
+    else {
+        $mgmt_grp = $null
+    }
+    $employee | Add-Member -MemberType NoteProperty -Name "mgmt_grp" -Value $mgmt_grp
+}
 
 
 # ============================================================
