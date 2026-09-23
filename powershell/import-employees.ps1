@@ -200,7 +200,7 @@ foreach ($employee in $employees){
 # ============================================================
 <#
 Example :
-id          : EMP0000
+id          : EMP9999
 first_name  : Marion
 last_name   : Furlan
 site        : Angoulême
