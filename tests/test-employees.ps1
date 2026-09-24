@@ -2,7 +2,7 @@
 . "./scripts/import-employees.ps1"
 
 $failed_tests = 0
-<#
+
 # ========================================================================================================
 # DATA INTEGRITY
 # Does the data exist and is it usable ?
@@ -99,7 +99,7 @@ else {
     Write-Output "[FAIL] List of employees without an OU target: $no_ou_targets" ""
     $failed_tests++
 }
-#>
+
 
 # ------------------------------------------------------------
 # Manager reference validity
@@ -121,13 +121,71 @@ else {
 
 
 
-<#
+
 # ========================================================================================================
 # STRUCTURE / TYPES
 # Does the data have the correct type
 # ========================================================================================================
+$boolean_attributes= @(
+    "is_manager"
+    "is_it_admin"
+)
 
+$string_attributes= @(
+    "id"
+    "first_name"
+    "last_name"
+    "site"
+    "department"
+    "job_title"
+    "username"
+    "email"
+    "ou_dn"
+    "dpt_grp"
+)
 
+$string_or_null_attributes= @(
+    "manager"
+    "mgmt_grp"
+    "admin_grp"
+)
+
+$invalid_types = foreach ($employee in $employees) {
+# ------------------------------------------------------------
+# Boolean values
+# ------------------------------------------------------------
+    foreach ($boolean_attribute in $boolean_attributes){
+        if ($employee.$boolean_attribute -isnot [bool]) {
+            Write-Output "Wrong $boolean_attribute value type : $($employee.id)"
+        }
+    }
+
+# ------------------------------------------------------------
+# String values
+# ------------------------------------------------------------
+    foreach ($string_attribute in $string_attributes){
+        if ($employee.$string_attribute -isnot [string]) {
+            Write-Output "Wrong $string_attribute value type : $($employee.id)"
+        }
+    }
+
+# ------------------------------------------------------------
+# Boolean or string values
+# ------------------------------------------------------------
+   foreach ($string_or_null_attribute in $string_or_null_attributes){
+        if (-not (($employee.$string_or_null_attribute -is [string]) -or ($employee.$string_or_null_attribute -eq $null))) {
+            Write-Output "Wrong $string_or_null_attribute value type : $($employee.id)"
+        }
+    }
+}
+
+if ($invalid_types -eq $null) {
+    Write-Output "[PASS] Every attribute has the correct type" ""
+}
+else {
+    Write-Output "[FAIL] List of attributes with a wrong type: " $invalid_types ""
+    $failed_tests++
+}
 
 
 # ========================================================================================================
@@ -307,4 +365,3 @@ if ($failed_tests -gt 0){
     exit 1
 }
 else { exit 0 }
-#>
