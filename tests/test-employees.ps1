@@ -93,7 +93,7 @@ else {
         Write-Output "[FAIL] List of employees without a valid email: $invalid_emails" ""
         $failed_tests++
 }
-#>
+
 
 # ------------------------------------------------------------
 # Manager detection
@@ -116,8 +116,118 @@ if ($invalid_is_manager_att -ne $null) {
 else {
     Write-Output "[PASS] Every employee has a valid is_manager attribute" ""
 }
+ #>
+
+
+# ------------------------------------------------------------
+# IT admin detection
+# ------------------------------------------------------------
+Write-Output "TESTING IS_MANAGER ATTRIBUTION FOR EACH EMPLOYEE ..."
+
+$managers = $employees | Where-Object -Property job_title -in $roles.manager_job_titles
+$non_managers = $employees |  Where-Object -Property job_title -notin $roles.manager_job_titles
+
+$invalid_is_manager_att = foreach ($employee in $employees) {
+    if ( (($employee -in $managers) -and ($employee.is_manager -ne $true)) -or (($employee -in $non_managers) -and ($employee.is_manager -ne $false)) ) {
+        Write-Output $employee.id
+    }
+}
+
+if ($invalid_is_manager_att -ne $null) {
+   Write-Output "[FAIL] List of employees without a valid is_manager attribute: $invalid_is_manager_att" ""
+   $failed_tests++
+}
+else {
+    Write-Output "[PASS] Every employee has a valid is_manager attribute" ""
+}
 
 <#
+# ------------------------------------------------------------
+# Department group consistency
+# ------------------------------------------------------------
+Write-Output "TESTING DEPARTMENT GROUP CONSISTENCY FOR EACH EMPLOYEE ..."
+
+$invalid_dpt_grp = foreach ($employee in $employees) {
+    if ($employee.department -eq "Cybersecurity") {
+        if ($employee.dpt_grp -ne "GG_$($employee.department)") {
+            Write-Output $employee.id
+        }
+    }
+    else {
+        if ($employee.dpt_grp -ne "GG_$($employee.site)_$($employee.department)") {
+            Write-Output $employee.id
+        }
+    }
+}
+
+if ($invalid_dpt_grp -ne $null) {
+   Write-Output "[FAIL] List of employees without a valid dpt_grp attribute: $invalid_dpt_grp" ""
+   $failed_tests++
+}
+else {
+    Write-Output "[PASS] Every employee has a valid dpt_grp attribute" ""
+}
+
+
+# ------------------------------------------------------------
+# Manager group consistency
+# ------------------------------------------------------------
+Write-Output "TESTING MANAGEMENT GROUP CONSISTENCY FOR EACH EMPLOYEE ..."
+
+$invalid_mgmt_grp = foreach ($employee in $employees) {
+
+    $expected_mgmt_grp = "$($employee.dpt_grp)_Managers"
+
+    if ($employee.is_manager -eq $true) {
+        if ($employee.mgmt_grp -ne $expected_mgmt_grp) {
+            Write-Output $employee.id
+        }
+    }
+    else {
+        if ($employee.mgmt_grp -ne $null) {
+            Write-Output $employee.id
+        }
+    }
+}
+
+if ($invalid_mgmt_grp -ne $null) {
+    Write-Output "[FAIL] List of employees without a valid mgmt_grp attribute: $invalid_mgmt_grp" ""
+    $failed_tests++
+}
+else {
+    Write-Output "[PASS] Every employee has a valid mgmt_grp attribute" ""
+}
+
+
+# ------------------------------------------------------------
+# IT Admin group consistency
+# ------------------------------------------------------------
+Write-Output "TESTING IT ADMIN GROUP CONSISTENCY FOR EACH EMPLOYEE ..."
+
+$invalid_admin_grp = foreach ($employee in $employees) {
+
+    $expected_admin_grp = "$($employee.dpt_grp)_Admins"
+
+    if ($employee.is_it_admin -eq $true) {
+        if ($employee.admin_grp -ne $expected_admin_grp) {
+            Write-Output $employee.id
+        }
+    }
+    else {
+        if ($employee.admin_grp -ne $null) {
+            Write-Output $employee.id
+        }
+    }
+}
+
+if ($invalid_admin_grp -ne $null) {
+    Write-Output "[FAIL] List of it admins without a valid admin_grp attribute: $invalid_admin_grp" ""
+    $failed_tests++
+}
+else {
+    Write-Output "[PASS] Every employee has a valid admin_grp attribute" ""
+}
+
 # ------------------------------------------------------------
 # OU target presence
 # ------------------------------------------------------------
