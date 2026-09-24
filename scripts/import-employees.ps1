@@ -185,7 +185,7 @@ job_title   : Systems Administrator
 [...]
 is_it_admin : True
 dpt_grp     : GG_Angouleme_IT
-mgmt_grp    : GG_Angouleme_IT_Admins
+admin_grp    : GG_Angouleme_IT_Admins
 #>
 
 foreach ($employee in $employees){
