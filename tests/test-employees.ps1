@@ -238,32 +238,65 @@ else {
 }
 
 
-# ------------------------------------------------------------
-# Department group consistency
-# ------------------------------------------------------------
-Write-Output "TESTING DEPARTMENT GROUP CONSISTENCY FOR EACH EMPLOYEE ..."
 
-$invalid_dpt_grp = foreach ($employee in $employees) {
-    if ($employee.department -eq "Cybersecurity") {
-        if ($employee.dpt_grp -ne "GG_$($employee.department)") {
-            Write-Output $employee.id
-        }
+# ------------------------------------------------------------
+# mgmt_grp and admin_grp nullability
+# ------------------------------------------------------------
+Write-Output "TESTING NULLABILITY OF MGMT_GRP AND ADMIN_GRP FOR EACH EMPLOYEE ..."
+
+$invalid_null_group = foreach($employee in $employees){
+
+    # mgmt_grp attribute
+    if(
+        (($employee.is_manager -eq $true) -and ($employee.mgmt_grp -eq $null)) -or
+        (($employee.is_manager -eq $false) -and ($employee.mgmt_grp -ne $null))
+    ) {
+        Write-Output "Wrong mgmt_grp value : $($employee.id)" ""
     }
-    else {
-        if ($employee.dpt_grp -ne "GG_$($employee.site)_$($employee.department)") {
-            Write-Output $employee.id
-        }
+
+    # admin_grp attribute
+    if(
+        (($employee.is_it_admin -eq $true) -and ($employee.admin_grp -eq $null)) -or
+        (($employee.is_it_admin -eq $false) -and ($employee.admin_grp -ne $null))
+    ) {
+        Write-Output "Wrong admin_grp value : $($employee.id)" ""
     }
 }
 
-if ($invalid_dpt_grp -ne $null) {
-   Write-Output "[FAIL] List of employees without a valid dpt_grp attribute: $invalid_dpt_grp" ""
-   $failed_tests++
+if ($invalid_null_group -ne $null) {
+    Write-Output "[FAIL] List of employees with invalid manager or admin values: " $invalid_null_group
+    $failed_tests++
 }
 else {
-    Write-Output "[PASS] Every employee has a valid dpt_grp attribute" ""
+    Write-Output "[PASS] Every employees has valid manager and admin values" ""
 }
 
+
+
+
+
+
+# ========================================================================================================
+# DATA COHERENCE
+# Does every data tell the same story ?
+# ========================================================================================================
+# ------------------------------------------------------------
+# Email consistency
+# ------------------------------------------------------------
+Write-Output "TESTING EMAIL CONSISTENCY FOR EACH EMPLOYEE ..."
+$invalid_emails = foreach ($employee in $employees){
+    if($employee.email -ne "$($employee.username)@novera.fr" ) {
+        Write-Output "$($employee.id) - $($employee.username) - $($employee.email) | "
+    }
+}
+
+if ($invalid_emails -eq $null) {
+       Write-Output "[PASS] Every employee has a valid email" ""
+    }
+else {
+        Write-Output "[FAIL] List of employees without a valid email: $invalid_emails" ""
+        $failed_tests++
+}
 
 # ------------------------------------------------------------
 # Manager group consistency
@@ -324,31 +357,31 @@ else {
     Write-Output "[PASS] Every employee has a valid admin_grp attribute" ""
 }
 
-
-
-
-# ========================================================================================================
-# DATA COHERENCE
-# Does every data tell the same story ?
-# ========================================================================================================
 # ------------------------------------------------------------
-# Email consistency
+# Department group consistency
 # ------------------------------------------------------------
-Write-Output "TESTING EMAIL CONSISTENCY FOR EACH EMPLOYEE ..."
-$invalid_emails = foreach ($employee in $employees){
-    if($employee.email -ne "$($employee.username)@novera.fr" ) {
-        Write-Output "$($employee.id) - $($employee.username) - $($employee.email) | "
+Write-Output "TESTING DEPARTMENT GROUP CONSISTENCY FOR EACH EMPLOYEE ..."
+
+$invalid_dpt_grp = foreach ($employee in $employees) {
+    if ($employee.department -eq "Cybersecurity") {
+        if ($employee.dpt_grp -ne "GG_$($employee.department)") {
+            Write-Output $employee.id
+        }
+    }
+    else {
+        if ($employee.dpt_grp -ne "GG_$($employee.site)_$($employee.department)") {
+            Write-Output $employee.id
+        }
     }
 }
 
-if ($invalid_emails -eq $null) {
-       Write-Output "[PASS] Every employee has a valid email" ""
-    }
+if ($invalid_dpt_grp -ne $null) {
+   Write-Output "[FAIL] List of employees without a valid dpt_grp attribute: $invalid_dpt_grp" ""
+   $failed_tests++
+}
 else {
-        Write-Output "[FAIL] List of employees without a valid email: $invalid_emails" ""
-        $failed_tests++
+    Write-Output "[PASS] Every employee has a valid dpt_grp attribute" ""
 }
-
 
 
 # ========================================================================================================
