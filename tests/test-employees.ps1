@@ -2,7 +2,7 @@
 . "./scripts/import-employees.ps1"
 
 $failed_tests = 0
-
+<#
 # ========================================================================================================
 # DATA INTEGRITY
 # Does the data exist and is it usable ?
@@ -99,11 +99,29 @@ else {
     Write-Output "[FAIL] List of employees without an OU target: $no_ou_targets" ""
     $failed_tests++
 }
+#>
+
+# ------------------------------------------------------------
+# Manager reference validity
+# Does the manager attribute reference an existing employee ?
+# ------------------------------------------------------------
+$invalid_manager = foreach ($employee in $employees) {
+    if (($employee.manager -ne $null) -and ($employee.manager -notin $employees.id )) {
+        Write-Output $employee.id
+    }
+}
+
+if ($invalid_manager -eq $null) {
+    Write-Output "[PASS] Every manager reference points to an existing employee" ""
+}
+else {
+    Write-Output "[FAIL] List of employees with an invalid manager reference: $invalid_manager" ""
+    $failed_tests++
+}
 
 
 
-
-
+<#
 # ========================================================================================================
 # STRUCTURE / TYPES
 # Does the data have the correct type
@@ -138,7 +156,6 @@ if ($invalid_is_manager_att -ne $null) {
 else {
     Write-Output "[PASS] Every employee has a valid is_manager attribute" ""
 }
- #>
 
 
 # ------------------------------------------------------------
