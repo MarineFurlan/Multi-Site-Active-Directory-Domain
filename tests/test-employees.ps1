@@ -2,20 +2,11 @@
 . "./scripts/import-employees.ps1"
 
 $failed_tests = 0
-<#
-# ------------------------------------------------------------
-# Employee count
-# ------------------------------------------------------------
-Write-Output "COUNTING EMPLOYEES IN JSON FILE ..."
-$targeted_employees_count = 98
-$employees_count = $employees.Count
-if ($targeted_employees_count -eq $employees_count) {
-    Write-Output "[PASS] Employees count: $employees_count" ""
-}
-else {
-    Write-Output "[FAIL] Employees count: $employees_count" ""
-    $failed_tests++
-}
+
+# ========================================================================================================
+# DATA INTEGRITY
+# Does the data exist and is it usable ?
+# ========================================================================================================
 # ------------------------------------------------------------
 # Username presence
 # ------------------------------------------------------------
@@ -75,25 +66,41 @@ Write-Output "[FAIL] List of employees without email: $no_emails" ""
 $failed_tests++
 }
 
+# ------------------------------------------------------------
+# OU target presence
+# ------------------------------------------------------------
+Write-Output "TESTING OU TARGET FOR EACH EMPLOYEE ..."
 
-# ------------------------------------------------------------
-# Email consistency
-# ------------------------------------------------------------
-Write-Output "TESTING EMAIL CONSISTENCY FOR EACH EMPLOYEE ..."
-$invalid_emails = foreach ($employee in $employees){
-    if($employee.email -ne "$($employee.username)@novera.fr" ) {
-        Write-Output "$($employee.id) - $($employee.username) - $($employee.email) | "
+$no_ou_targets = foreach ($employee in $employees) {
+    if ($employee.ou_dn -eq $null) {
+        Write-Output $employee.id
     }
 }
 
-if ($invalid_emails -eq $null) {
-       Write-Output "[PASS] Every employee has a valid email" ""
-    }
+if ($no_ou_targets -eq $null) {
+    Write-Output "[PASS] Every employee has an OU target" ""
+}
 else {
-        Write-Output "[FAIL] List of employees without a valid email: $invalid_emails" ""
-        $failed_tests++
+    Write-Output "[FAIL] List of employees without an OU target: $no_ou_targets" ""
+    $failed_tests++
 }
 
+
+
+
+
+# ========================================================================================================
+# STRUCTURE / TYPES
+# Does the data have the correct type
+# ========================================================================================================
+
+
+
+
+# ========================================================================================================
+# JOB RULES
+# Does the data follows Novera rules ?
+# ========================================================================================================
 
 # ------------------------------------------------------------
 # Manager detection
@@ -122,26 +129,25 @@ else {
 # ------------------------------------------------------------
 # IT admin detection
 # ------------------------------------------------------------
-Write-Output "TESTING IS_MANAGER ATTRIBUTION FOR EACH EMPLOYEE ..."
+Write-Output "TESTING IS_IT_ADMIN ATTRIBUTION FOR EACH EMPLOYEE ..."
 
-$managers = $employees | Where-Object -Property job_title -in $roles.manager_job_titles
-$non_managers = $employees |  Where-Object -Property job_title -notin $roles.manager_job_titles
+$it_admins = $employees | Where-Object -Property job_title -in $roles.it_admin_job_titles
 
-$invalid_is_manager_att = foreach ($employee in $employees) {
-    if ( (($employee -in $managers) -and ($employee.is_manager -ne $true)) -or (($employee -in $non_managers) -and ($employee.is_manager -ne $false)) ) {
+$invalid_is_admin_att = foreach ($employee in $employees) {
+    if ( (($employee -in $it_admins) -and ($employee.is_it_admin -ne $true)) -or (($employee -notin $it_admins) -and ($employee.is_it_admin -ne $false)) ) {
         Write-Output $employee.id
     }
 }
 
-if ($invalid_is_manager_att -ne $null) {
-   Write-Output "[FAIL] List of employees without a valid is_manager attribute: $invalid_is_manager_att" ""
+if ($invalid_is_admin_att -ne $null) {
+   Write-Output "[FAIL] List of employees without a valid is_it_admin attribute: $invalid_is_admin_att" ""
    $failed_tests++
 }
 else {
-    Write-Output "[PASS] Every employee has a valid is_manager attribute" ""
+    Write-Output "[PASS] Every employee has a valid is_it_admin attribute" ""
 }
 
-<#
+
 # ------------------------------------------------------------
 # Department group consistency
 # ------------------------------------------------------------
@@ -228,28 +234,54 @@ else {
     Write-Output "[PASS] Every employee has a valid admin_grp attribute" ""
 }
 
-# ------------------------------------------------------------
-# OU target presence
-# ------------------------------------------------------------
-Write-Output "TESTING OU TARGET FOR EACH EMPLOYEE ..."
 
-$no_ou_targets = foreach ($employee in $employees) {
-    if ($employee.ou_dn -eq $null) {
-        Write-Output $employee.id
+
+
+# ========================================================================================================
+# DATA COHERENCE
+# Does every data tell the same story ?
+# ========================================================================================================
+# ------------------------------------------------------------
+# Email consistency
+# ------------------------------------------------------------
+Write-Output "TESTING EMAIL CONSISTENCY FOR EACH EMPLOYEE ..."
+$invalid_emails = foreach ($employee in $employees){
+    if($employee.email -ne "$($employee.username)@novera.fr" ) {
+        Write-Output "$($employee.id) - $($employee.username) - $($employee.email) | "
     }
 }
 
-if ($no_ou_targets -eq $null) {
-    Write-Output "[PASS] Every employee has an OU target" ""
+if ($invalid_emails -eq $null) {
+       Write-Output "[PASS] Every employee has a valid email" ""
+    }
+else {
+        Write-Output "[FAIL] List of employees without a valid email: $invalid_emails" ""
+        $failed_tests++
+}
+
+
+
+# ========================================================================================================
+# EXPECTED RESULTS
+# ========================================================================================================
+# ------------------------------------------------------------
+# Employee count
+# ------------------------------------------------------------
+Write-Output "COUNTING EMPLOYEES IN JSON FILE ..."
+$targeted_employees_count = 98
+$employees_count = $employees.Count
+if ($targeted_employees_count -eq $employees_count) {
+    Write-Output "[PASS] Employees count: $employees_count" ""
 }
 else {
-    Write-Output "[FAIL] List of employees without an OU target: $no_ou_targets" ""
+    Write-Output "[FAIL] Employees count: $employees_count" ""
     $failed_tests++
 }
 
-# ------------------------------------------------------------
-# Tests overview
-# ------------------------------------------------------------
+
+# ========================================================================================================
+# TeESTS OVERVIEW
+# ========================================================================================================
 Write-Output "Failed test count : $failed_tests"
 if ($failed_tests -gt 0){
     exit 1
