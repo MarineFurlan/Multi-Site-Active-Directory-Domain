@@ -8,6 +8,21 @@ $failed_tests = 0
 # Does the data exist and is it usable ?
 # ========================================================================================================
 # ------------------------------------------------------------
+# Employee count
+# ------------------------------------------------------------
+Write-Output "COUNTING EMPLOYEES IN JSON FILE ..."
+$targeted_employees_count = 98
+$employees_count = $employees.Count
+if ($targeted_employees_count -eq $employees_count) {
+    Write-Output "[PASS] Employees count: $employees_count" ""
+}
+else {
+    Write-Output "[FAIL] Employees count: $employees_count" ""
+    $failed_tests++
+}
+
+
+# ------------------------------------------------------------
 # Username presence
 # ------------------------------------------------------------
 Write-Output "TESTING USERNAME PRESENCE FOR EACH EMPLOYEE ..."
@@ -264,19 +279,7 @@ else {
 # ========================================================================================================
 # EXPECTED RESULTS
 # ========================================================================================================
-# ------------------------------------------------------------
-# Employee count
-# ------------------------------------------------------------
-Write-Output "COUNTING EMPLOYEES IN JSON FILE ..."
-$targeted_employees_count = 98
-$employees_count = $employees.Count
-if ($targeted_employees_count -eq $employees_count) {
-    Write-Output "[PASS] Employees count: $employees_count" ""
-}
-else {
-    Write-Output "[FAIL] Employees count: $employees_count" ""
-    $failed_tests++
-}
+
 
 
 # ========================================================================================================
