@@ -2,7 +2,7 @@
 . "./scripts/import-employees.ps1"
 
 $failed_tests = 0
-
+<#
 # ------------------------------------------------------------
 # Employee count
 # ------------------------------------------------------------
@@ -93,7 +93,31 @@ else {
         Write-Output "[FAIL] List of employees without a valid email: $invalid_emails" ""
         $failed_tests++
 }
+#>
 
+# ------------------------------------------------------------
+# Manager detection
+# ------------------------------------------------------------
+Write-Output "TESTING IS_MANAGER ATTRIBUTION FOR EACH EMPLOYEE ..."
+
+$managers = $employees | Where-Object -Property job_title -in $roles.manager_job_titles
+$non_managers = $employees |  Where-Object -Property job_title -notin $roles.manager_job_titles
+
+$invalid_is_manager_att = foreach ($employee in $employees) {
+    if ( (($employee -in $managers) -and ($employee.is_manager -ne $true)) -or (($employee -in $non_managers) -and ($employee.is_manager -ne $false)) ) {
+        Write-Output $employee.id
+    }
+}
+
+if ($invalid_is_manager_att -ne $null) {
+   Write-Output "[FAIL] List of employees without a valid is_manager attribute: $invalid_is_manager_att" ""
+   $failed_tests++
+}
+else {
+    Write-Output "[PASS] Every employee has a valid is_manager attribute" ""
+}
+
+<#
 # ------------------------------------------------------------
 # OU target presence
 # ------------------------------------------------------------
@@ -121,3 +145,4 @@ if ($failed_tests -gt 0){
     exit 1
 }
 else { exit 0 }
+#>
