@@ -3,6 +3,8 @@
 
 $failed_tests = 0
 
+
+
 # ========================================================================================================
 # DATA INTEGRITY
 # Does the data exist and is it usable ?
@@ -119,6 +121,31 @@ else {
     $failed_tests++
 }
 
+# ------------------------------------------------------------
+# Reference values validity
+# ------------------------------------------------------------
+$invalid_references = foreach ($employee in $employees) {
+
+    # Sites
+    if ($employee.site -notin $references.sites) {
+        Write-Output "Wrong site : $($employee.id)"
+    }
+
+    # Departments
+    if ($employee.department -notin $references.departments) {
+        Write-Output "Wrong department : $($employee.id)"
+    }
+
+}
+
+if ($invalid_references -eq $null) {
+    Write-Output "[PASS] Every employee reference is valid" ""
+}
+else {
+    Write-Output "[FAIL] List of employees with invalid references: " $invalid_references ""
+    $failed_tests++
+}
+
 
 
 
@@ -186,6 +213,8 @@ else {
     Write-Output "[FAIL] List of attributes with a wrong type: " $invalid_types ""
     $failed_tests++
 }
+
+
 
 
 # ========================================================================================================
@@ -384,14 +413,9 @@ else {
 }
 
 
-# ========================================================================================================
-# EXPECTED RESULTS
-# ========================================================================================================
-
-
 
 # ========================================================================================================
-# TeESTS OVERVIEW
+# TESTS OVERVIEW
 # ========================================================================================================
 Write-Output "Failed test count : $failed_tests"
 if ($failed_tests -gt 0){

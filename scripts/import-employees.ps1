@@ -8,6 +8,9 @@ $data = $json | ConvertFrom-Json
 $roles_json = Get-Content "./data/roles.json" -Encoding UTF8
 $roles = $roles_json | ConvertFrom-Json
 
+$references_json = Get-Content "./data/references.json" -Encoding UTF8
+$references = $references_json | ConvertFrom-Json
+
 
 # ============================================================
 # USERNAME GENERATION

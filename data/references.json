@@ -1,0 +1,14 @@
+{
+    "sites": [
+        "Angouleme",
+        "Bordeaux"
+    ],
+    "departments": [
+        "IT",
+        "Accounting",
+        "HR",
+        "R&D",
+        "Data",
+        "Cybersecurity"
+    ]
+}
