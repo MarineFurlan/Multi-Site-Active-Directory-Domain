@@ -210,3 +210,53 @@ $domain_dn = "DC=novera,DC=fr"
 foreach ($employee in $employees) {
     $employee | Add-Member -MemberType NoteProperty -Name "ou_dn" -Value "OU=$($employee.department),OU=Users,OU=$($employee.site),$domain_dn"
 }
+
+# ============================================================
+# ACTIVE DIRECTORY USER CREATION
+# ============================================================
+# ------------------------------------------------------------
+# Verify that every target OU exists before creating users
+# ------------------------------------------------------------
+Import-Module ActiveDirectory -ErrorAction Stop
+
+$targetOUs = $employees | Select-Object -ExpandProperty ou_dn -Unique
+
+foreach ($ou in $targetOUs) {
+    $null = Get-ADOrganizationalUnit -Identity $ou -ErrorAction Stop
+    Write-Host "OU OK : $ou" -ForegroundColor Green
+}
+
+
+
+# ------------------------------------------------------------
+# Verify if ADuser isn't already created
+# ------------------------------------------------------------
+$adusernames = Get-ADUser -Filter * | Select-Object -ExpandProperty SamAccountName
+
+$createdUsers = [System.Collections.Generic.List[string]]::new()
+$skippedUsers = [System.Collections.Generic.List[string]]::new()
+
+foreach ($employee in $employees) {
+    if ($employee.username -in $adusernames) {
+        $skippedUsers.Add($employee.username)
+    }
+
+    else {
+        <#New-ADUser -SamAccountName $employee.username `
+            -Name "$($employee.first_name) $($employee.last_name)" `
+            -Path $employee.ou_dn `
+            -GivenName $employee.first_name `
+            -Surname $employee.last_name `
+            -Title $employee.job_title `
+            -Department $employee.department `
+            -EmailAddress $employee.email `
+            -Enabled $false#>
+
+        $createdUsers.Add($employee.username)
+    }
+}
+
+Write-Output "$($skippedUsers.count) already have an AD account"
+Write-Output "List of skipped account : $($skippedUsers -join ', ')" ""
+Write-Output "$($createdUsers.count) accounts will now be created"
+Write-Output "List of created account : $($createdUsers -join ', ')"
