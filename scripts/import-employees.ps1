@@ -275,17 +275,67 @@ Write-Output "List of failed account : $($failedUsers -join ', ')"
 # ------------------------------------------------------------
 # Add user to groups
 # ------------------------------------------------------------
+# Verify user is not already in the group
+
+$failedDptGroupAdd = [System.Collections.Generic.List[string]]::new()
+$failedMgmtGroupAdd = [System.Collections.Generic.List[string]]::new()
+$failedAdminGroupAdd = [System.Collections.Generic.List[string]]::new()
+
 foreach ($employee in $employees) {
+
     # Base department group
-    Add-ADGroupMember -Identity $employee.dpt_grp -Members $employee.username
+    $employee_dptGroup = Get-ADGroupMember -Identity $employee.dpt_grp | Select-Object -ExpandProperty SamAccountName
+    if ($employee.username -notin $employee_dptGroup) {
+        try {
+            Add-ADGroupMember `
+            -Identity $employee.dpt_grp `
+            -Members $employee.username `
+            -ErrorAction Stop
+        }
+        catch {
+            $failedDptGroupAdd.Add($employee.username)
+            Write-Warning "$($employee.username) group addition error : $($_.Exception.Message)"
+        }
+    }
 
     # If manager
-    if ($employee.mgmt_grp -ne $null) {
-        Add-ADGroupMember -Identity $employee.mgmt_grp -Members $employee.username
+    if ($null -ne $employee.mgmt_grp) {
+        $employee_mgmtGroup = Get-ADGroupMember -Identity $employee.mgmt_grp | Select-Object -ExpandProperty SamAccountName
+        if ($employee.username -notin $employee_mgmtGroup) {
+            try {
+                Add-ADGroupMember `
+                -Identity $employee.mgmt_grp `
+                -Members $employee.username `
+                -ErrorAction Stop
+            }
+            catch {
+                $failedMgmtGroupAdd.Add($employee.username)
+                Write-Warning "$($employee.username) group addition error : $($_.Exception.Message)"
+            }
+        }
     }
 
     # If IT admin
-    if ($employee.admin_grp -ne $null) {
-        Add-ADGroupMember -Identity $employee.admin_grp -Members $employee.username
+    if ($null -ne $employee.admin_grp) {
+        $employee_adminGroup = Get-ADGroupMember -Identity $employee.admin_grp | Select-Object -ExpandProperty SamAccountName
+        if ($employee.username -notin $employee_adminGroup) {
+            try {
+                Add-ADGroupMember `
+                -Identity $employee.admin_grp `
+                -Members $employee.username `
+                -ErrorAction Stop
+            }
+            catch {
+                $failedAdminGroupAdd.Add($employee.username)
+                Write-Warning "$($employee.username) group addition error : $($_.Exception.Message)"
+            }
+        }
     }
 }
+
+Write-Output "$($failedDptGroupAdd.count) account couldn't have been added to dpt group" ""
+Write-Output "List of accounts with failed dpt_grp addition : $($failedDptGroupAdd -join ', ') "
+Write-Output "$($failedMgmtGroupAdd.count) account couldn't have been added to mgmt group" ""
+Write-Output "List of accounts with failed mgmt_grp addition : $($failedMgmtGroupAdd -join ', ') "
+Write-Output "$($failedAdminGroupAdd.count) account couldn't have been added to admin group" ""
+Write-Output "List of accounts with failed admin_grp addition : $($failedAdminGroupAdd -join ', ') "
