@@ -229,12 +229,13 @@ foreach ($ou in $targetOUs) {
 
 
 # ------------------------------------------------------------
-# Verify if ADuser isn't already created
+# Add new user if it has not already been created
 # ------------------------------------------------------------
 $adusernames = Get-ADUser -Filter * | Select-Object -ExpandProperty SamAccountName
 
 $createdUsers = [System.Collections.Generic.List[string]]::new()
 $skippedUsers = [System.Collections.Generic.List[string]]::new()
+$failedUsers = [System.Collections.Generic.List[string]]::new()
 
 foreach ($employee in $employees) {
     if ($employee.username -in $adusernames) {
@@ -242,7 +243,8 @@ foreach ($employee in $employees) {
     }
 
     else {
-        <#New-ADUser -SamAccountName $employee.username `
+        try {
+            New-ADUser -SamAccountName $employee.username `
             -Name "$($employee.first_name) $($employee.last_name)" `
             -Path $employee.ou_dn `
             -GivenName $employee.first_name `
@@ -250,13 +252,40 @@ foreach ($employee in $employees) {
             -Title $employee.job_title `
             -Department $employee.department `
             -EmailAddress $employee.email `
-            -Enabled $false#>
+            -Enabled $false `
+            -ErrorAction Stop
 
-        $createdUsers.Add($employee.username)
+            $createdUsers.Add($employee.username)
+        }
+        catch {
+            $failedUsers.Add($employee.username)
+            Write-Warning "$($employee.username) account creation error : $($_.Exception.Message)"
+        }
+
     }
 }
 
 Write-Output "$($skippedUsers.count) already have an AD account"
 Write-Output "List of skipped account : $($skippedUsers -join ', ')" ""
-Write-Output "$($createdUsers.count) accounts will now be created"
-Write-Output "List of created account : $($createdUsers -join ', ')"
+Write-Output "$($createdUsers.count) accounts have been created"
+Write-Output "List of created account : $($createdUsers -join ', ')" ""
+Write-Output "$($failedUsers.count) accounts creation failed"
+Write-Output "List of failed account : $($failedUsers -join ', ')"
+
+# ------------------------------------------------------------
+# Add user to groups
+# ------------------------------------------------------------
+foreach ($employee in $employees) {
+    # Base department group
+    Add-ADGroupMember -Identity $employee.dpt_grp -Members $employee.username
+
+    # If manager
+    if ($employee.mgmt_grp -ne $null) {
+        Add-ADGroupMember -Identity $employee.mgmt_grp -Members $employee.username
+    }
+
+    # If IT admin
+    if ($employee.admin_grp -ne $null) {
+        Add-ADGroupMember -Identity $employee.admin_grp -Members $employee.username
+    }
+}
