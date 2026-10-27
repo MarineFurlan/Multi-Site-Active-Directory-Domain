@@ -97,39 +97,50 @@ This design supports location-based administration and delegation while keeping 
 
 ## 6. Implemented Features
 
-### Active Directory deployment
+### Active Directory Infrastructure
 
-- Two domain controllers deployed in the same domain.
+- Two Windows Server 2025 domain controllers deployed in the `novera.fr` forest.
 - DNS installed on both domain controllers.
-- Two AD sites and their associated subnets configured.
-- Inter-site replication configured and validated during the lab.
+- Two AD sites configured: Bordeaux and Angoulême.
+- Site subnets and the `BDX-ANG` site link configured.
+- Inter-site replication validated after the initial synchronization period.
 
-### Organizational structure and identity management
+### Organizational Structure and Identity Management
 
-- Site-based OU hierarchy created.
-- Departmental user OUs created.
-- Users and security groups provisioned using PowerShell scripts.
+- Site-based organizational unit hierarchy created.
+- Departmental user OUs and security groups configured.
+- Employee data imported using PowerShell automation.
+- Employee import tests maintained in the `tests/` directory.
+
+Relevant files:
+- [`scripts/import-employees.ps1`](scripts/import-employees.ps1)
+- [`tests/test-employees.ps1`](tests/test-employees.ps1)
 
 ### Group Policy
 
-- Workstation inactivity policy configured and tested.
+- Workstation inactivity lock policy configured and tested.
 - Domain account lockout policy configured and tested.
 
-### Delegated administration
+### Delegated Administration
 
-- User-account administration delegated to `GG_Bordeaux_IT_Admins` within the Bordeaux user OU scope.
-- Account creation, description modification, and password reset tested with the delegated account.
+- Delegated user-account administration configured for the Bordeaux IT administration group.
+- User creation, description modification, and password reset tested with a delegated account.
 
-The predefined delegation used includes broader permissions than password reset alone, including account deletion. This is a documented lab design trade-off.
+Documentation:
+- [`docs/delegation-administration.md`](docs/delegation-administration.md)
+- [`docs/delegation-user-accounts.md`](docs/delegation-user-accounts.md)
 
-### File sharing and permissions
+### Network Share and File Permissions
 
-- SMB share created on `DC01-BDX` at `\\DC01-BDX\IT-Bordeaux`.
-- `GG_Bordeaux_IT` granted Modify permissions at the share and NTFS levels.
-- `Administrateurs` granted Full Control at the share level.
+- SMB share created at `\\DC01-BDX\IT-Bordeaux`.
+- `GG_Bordeaux_IT` granted Modify permissions at the SMB share and NTFS levels.
+- `Administrateurs` granted Full Control at the SMB share level.
 - Access tested with an authorized IT user and a non-IT user.
 
-The file share is hosted on a domain controller for lab purposes. A dedicated file server would be preferable in a production environment.
+Documentation:
+- [`docs/network-share-permissions.md`](docs/network-share-permissions.md)
+
+**Lab limitation:** The file share is hosted on a domain controller for demonstration purposes. A dedicated file server would be preferable in a production environment.
 
 ## 7. Deployment Guide
 
