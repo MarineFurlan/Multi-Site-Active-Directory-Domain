@@ -28,16 +28,18 @@ The project focuses on Active Directory administration, multi-site replication, 
 
 ## 2. Objectives
 
-| Professional skill | Implementation in this lab |
+| Professional skill | What this lab demonstrates |
 |---|---|
-| Windows infrastructure administration | Deploy and configure AD DS domain controllers |
-| Active Directory administration | Manage OUs, users, groups, DNS, and domain membership |
-| Multi-site infrastructure | Configure separate subnets, AD sites, and site replication |
-| Group Policy management | Configure and validate workstation and account policies |
-| Delegated administration | Delegate user-account management to a designated IT group |
-| File access management | Configure SMB share permissions and NTFS permissions |
-| PowerShell automation | Use scripts to automate selected administrative tasks |
-| Network administration | Route traffic between the two sites using Debian |
+| Windows infrastructure administration | Deployment and configuration of Windows Server domain controllers |
+| Active Directory administration | Domain, OU, user, and security group management |
+| Multi-site infrastructure | Separate site subnets, AD Sites and Services, and inter-site replication |
+| Group Policy management | Configuration and functional validation of workstation and account policies |
+| Delegated administration | Scoped delegation of user-account management permissions |
+| File access management | SMB share configuration and NTFS permission management |
+| PowerShell automation | Scripted employee import and associated test files |
+| Network administration | Inter-site routing using a Debian router |
+
+Cloud identity synchronization and broader infrastructure automation are potential future improvements, not completed objectives.
 
 ## 3. Architecture Overview
 
