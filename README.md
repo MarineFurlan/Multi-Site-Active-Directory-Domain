@@ -162,17 +162,20 @@ The deployment covers:
 
 ## 8. Validation Results
 
-The following features have been tested during the lab:
+The lab's core features have been validated through functional tests.
 
-| Component | Validation |
-|---|---|
-| Domain membership | `CL01-BDX` joined to `novera.fr` |
-| Inter-site connectivity | Communication between the two site subnets tested |
-| AD replication | Replication summary returned without errors after the lab was allowed to stabilize |
-| Workstation policy | Inactivity lock tested |
-| Account lockout policy | Lockout behavior tested with a temporary test account |
-| Delegated administration | User creation, description modification, and password reset tested |
-| SMB share | Authorized access and file creation succeeded; non-IT access was denied |
+| Component | Validation performed | Result |
+|---|---|---|
+| Domain membership | Joined `CL01-BDX` to `novera.fr` | Successful |
+| Inter-site networking | Tested connectivity between the Bordeaux and Angoulême subnets | Successful |
+| AD replication | Checked replication using `repadmin`; the summary eventually returned no errors after allowing synchronization to complete | Successful |
+| Workstation Group Policy | Tested the configured inactivity lock policy | Successful |
+| Account lockout policy | Tested account lockout using a temporary test account | Successful |
+| Delegated administration | Tested user creation, description modification, and password reset | Successful |
+| SMB share access | Confirmed file creation by an authorized IT user and access denial for a non-IT user | Successful |
+| Employee import | PowerShell import script and corresponding test file are present in the repository | Implementation present; test status to be documented separately |
+
+These results reflect the tests performed during the lab. They do not constitute a complete production-readiness or disaster-recovery assessment.
 
 ## 9. Repository Structure
 
