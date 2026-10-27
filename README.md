@@ -1,313 +1,211 @@
-# Structure and deploy a High Availability multi-site Active Directory domain
+# Multi-Site Active Directory Infrastructure Lab
 
-**Status :** 🟡 In progress
-<br/>
-<br/>
+**Status:** 🟡 Core deployment completed — documentation and final review in progress
 
-## Table of content
-- [Introduction](#1-introduction)
-- [Design Decisions](#2-design-decisions)
-- [Architecture Overview](#3-architecture-overview)
-- [Deployment](#4-deployment)
-- [Results](#5-results)
-- [Infrastructure Cleaning](#6-infrastructure-cleaning)
-- [Pricing](#7-pricing)
-- [Improvements & Next Steps](#8-improvements--next-steps)
-- [References](#9-references)
-- [Repository Structure](#10-repo-structure)
-<br/>
-<br/>
-<br/>
+## Table of Contents
 
-## 1. Introduction 
-<a name="#1-introduction"></a>     
-&emsp;&emsp;This lab walks through deploying a complete Active Directory domain on VMware, featuring two domain controllers for high availability, an organizational unit (OU) structure aligned with a multi-site environment, and Group Policies designed to secure workstations. 
-All administration, including the creation of users, groups, OUs, and GPOs, is automated through PowerShell rather than performed manually through graphical management consoles.
-<br/>
-<br/>
+- [1. Introduction](#1-introduction)
+- [2. Objectives](#2-objectives)
+- [3. Architecture Overview](#3-architecture-overview)
+- [4. Network Design](#4-network-design)
+- [5. Active Directory Design](#5-active-directory-design)
+- [6. Implemented Features](#6-implemented-features)
+- [7. Deployment Guide](#7-deployment-guide)
+- [8. Validation Results](#8-validation-results)
+- [9. Repository Structure](#9-repository-structure)
+- [10. Limitations and Future Improvements](#10-limitations-and-future-improvements)
+- [11. References](#11-references)
 
+## 1. Introduction
 
-## 2. Objectives 
-<br/>
+This project documents the deployment and configuration of a multi-site Active Directory Domain Services (AD DS) infrastructure in a virtualized environment.
 
-| Professional requirement                  | What this lab demonstrates                          |
-|-------------------------------------------|-----------------------------------------------------|
-| **Windows infrastructure administration** | Full AD DS domain deployment from scratch           | 
-| **Active Directory proficiency**          | OU structure, user/group management, delegation     |
-| **GPO and security management*            | Hardening GPOs tested and documented                |
-| **Automation / process industrialization**| Reusable PowerShell scripts, zero manual action     |
-| **Hybrid environment / Microsoft 365**    | Azure AD synchronization                            |
+The lab simulates a company operating across two French locations: Bordeaux and Angoulême. Each site has its own subnet and domain controller, while both locations belong to the same Active Directory forest.
 
-<br/>
-<br/>
-<br/>
+The infrastructure is built with VMware Workstation Pro, Windows Server 2025, Windows 11 Pro, and a Debian 12 router.
+
+The project focuses on Active Directory administration, multi-site replication, organizational unit design, Group Policy management, delegated administration, network connectivity, and file access permissions.
+
+## 2. Objectives
+
+| Professional skill | Implementation in this lab |
+|---|---|
+| Windows infrastructure administration | Deploy and configure AD DS domain controllers |
+| Active Directory administration | Manage OUs, users, groups, DNS, and domain membership |
+| Multi-site infrastructure | Configure separate subnets, AD sites, and site replication |
+| Group Policy management | Configure and validate workstation and account policies |
+| Delegated administration | Delegate user-account management to a designated IT group |
+| File access management | Configure SMB share permissions and NTFS permissions |
+| PowerShell automation | Use scripts to automate selected administrative tasks |
+| Network administration | Route traffic between the two sites using Debian |
 
 ## 3. Architecture Overview
-<a name="#3-architecture-overview"></a> 
-<br/>
-<img width="4821" height="4869" alt="Lab_forest" src="https://github.com/user-attachments/assets/8312b96c-930a-4769-86ff-b1c51a1922b2" />
 
-<br/>
+The lab consists of two Active Directory sites connected through a Debian router.
 
-&emsp;&emsp;This lab simulates a French company operating across multiple geographic sites, each with its own specialization.\
-The Angoulême office focuses on R&D, while the Bordeaux office is centered around Data and Cybersecurity. The company may also expand internationally in the future. \
-<br/>
-Given this context, I chose a hybrid OU structure with location at the top level and departments underneath. \
-Placing sites at the top level allows GPOs and admin delegation to be applied per location.\
-Different antennas of the same company can have different servers, different security policies, and different local IT administrators without those settings interfering with each other. If the company opens a new site abroad, it simply becomes a new top-level OU with its own structure underneath, without touching anything else. \
-<br/>
-Departments sit underneath each site for fine-grained access control. \
-A Data engineer in Bordeaux and a Data engineer in a future London office may have the same departmental access rights, but they are managed independently by their respective local admins. \
-<br/>
-Groups are organized by purpose rather than by location or department. GRP_IT grants access to servers and administration tools, GRP_DATA grants access to the data warehouse, GRP_ACCOUNTING grants access to accounting files, and so on. \
-This separation between OUs (where things are) and groups (what things can do) follows Active Directory best practices and makes access management scalable, adding a new employee to the right group immediately grants them the correct permissions, regardless of which site they belong to.
+- **Bordeaux:** primary lab site, including the first domain controller and a Windows client.
+- **Angoulême:** second site, including the second domain controller.
+- **Routing:** Debian 12 router connecting both site subnets and providing external connectivity for the lab.
 
-<br/>
+The two domain controllers belong to the same forest and domain: `novera.fr`.
 
-<details>
-<summary>Virtual Machines Topology</summary>
- 
-<br/>
- 
-| Virtual machine   | Role                             | RAM     | Storage    |   IP                    | 
-|-------------------|----------------------------------|---------|------------|-------------------------|
-| DC01              | Primary Domain Controller        | 2Go     | 20 Go      | 192.168.100.10          |
-| DC02              | Secondary Domain Controller      | 2Go     | 20 Go      | 192.168.100.11          |
-| WIN10             | Client                           | 1Go     | 10 Go      | Auto                    |
+<!-- Replace this placeholder with the current architecture diagram. -->
 
-</details>
- 
-<br/>
+### Virtual Machines
 
-<details>
-<summary>Network Plan</summary>
- 
-<br/>
+| Virtual machine | Role | Operating system | IP address |
+|---|---|---|---|
+| `DC01-BDX` | Domain controller and DNS | Windows Server 2025 | `10.10.10.10` |
+| `DC02-ANG` | Domain controller and DNS | Windows Server 2025 | `10.10.20.10` |
+| `RTR01` | Inter-site router | Debian 12 | See Network Design |
+| `CL01-BDX` | Domain-joined workstation | Windows 11 Pro | `10.10.10.20` |
 
-| Parameter         | Value                           | 
-|-------------------|---------------------------------|
-| Lab network       | 192.168.100.0 - 255.255.255.0   |
-| Domain name       | ADlab.local                     |
+## 4. Network Design
 
-</details>
+### Site subnets
 
-<br/>
+| Site | Subnet | Default gateway | Domain controller |
+|---|---|---|---|
+| Bordeaux | `10.10.10.0/24` | `10.10.10.1` | `DC01-BDX` |
+| Angoulême | `10.10.20.0/24` | `10.10.20.1` | `DC02-ANG` |
 
-<details>
-<summary>Organizational unit structure</summary>
- 
-<br/>
+### Router interfaces
 
-```bash
-domain.local
-  ├── _ADMINISTRATION
-  ├── SERVERS
-  ├── USERS
-  └── GROUPS
+| Interface | Network | IP address |
+|---|---|---|
+| `ens33` | Bordeaux | `10.10.10.1/24` |
+| `ens34` | Angoulême | `10.10.20.1/24` |
+| `ens38` | VMware NAT | `192.168.31.131/24` |
+
+The router enables IPv4 forwarding between the two site networks. Its NAT-facing interface provides external connectivity for the lab.
+
+## 5. Active Directory Design
+
+**Forest and domain:** `novera.fr`  
+**NetBIOS domain name:** `NOVERA`
+
+Active Directory Sites and Services contains two sites:
+
+- `Bordeaux`, associated with subnet `10.10.10.0/24`.
+- `Angouleme`, associated with subnet `10.10.20.0/24`.
+
+The sites are connected through the `BDX-ANG` site link.
+
+The organizational unit structure separates resources by location. Each site contains OUs for users, computers, servers, and groups. User OUs are further organized by department.
+
+This design supports location-based administration and delegation while keeping security groups responsible for access control.
+
+## 6. Implemented Features
+
+### Active Directory deployment
+
+- Two domain controllers deployed in the same domain.
+- DNS installed on both domain controllers.
+- Two AD sites and their associated subnets configured.
+- Inter-site replication configured and validated during the lab.
+
+### Organizational structure and identity management
+
+- Site-based OU hierarchy created.
+- Departmental user OUs created.
+- Users and security groups provisioned using PowerShell scripts.
+
+### Group Policy
+
+- Workstation inactivity policy configured and tested.
+- Domain account lockout policy configured and tested.
+
+### Delegated administration
+
+- User-account administration delegated to `GG_Bordeaux_IT_Admins` within the Bordeaux user OU scope.
+- Account creation, description modification, and password reset tested with the delegated account.
+
+The predefined delegation used includes broader permissions than password reset alone, including account deletion. This is a documented lab design trade-off.
+
+### File sharing and permissions
+
+- SMB share created on `DC01-BDX` at `\\DC01-BDX\IT-Bordeaux`.
+- `GG_Bordeaux_IT` granted Modify permissions at the share and NTFS levels.
+- `Administrateurs` granted Full Control at the share level.
+- Access tested with an authorized IT user and a non-IT user.
+
+The file share is hosted on a domain controller for lab purposes. A dedicated file server would be preferable in a production environment.
+
+## 7. Deployment Guide
+
+The detailed deployment procedures will be maintained as separate documentation files where appropriate.
+
+The deployment covers:
+
+1. Creating the VMware virtual networks and virtual machines.
+2. Configuring static IP addresses and routing.
+3. Installing and promoting the domain controllers.
+4. Configuring AD sites, subnets, and replication.
+5. Creating the OU structure, users, and security groups.
+6. Joining the Windows client to the domain.
+7. Configuring and validating Group Policies.
+8. Delegating user-account administration.
+9. Configuring and testing the SMB share and NTFS permissions.
+
+<!-- Add links to detailed deployment guides as they are finalized. -->
+
+## 8. Validation Results
+
+The following features have been tested during the lab:
+
+| Component | Validation |
+|---|---|
+| Domain membership | `CL01-BDX` joined to `novera.fr` |
+| Inter-site connectivity | Communication between the two site subnets tested |
+| AD replication | Replication summary returned without errors after the lab was allowed to stabilize |
+| Workstation policy | Inactivity lock tested |
+| Account lockout policy | Lockout behavior tested with a temporary test account |
+| Delegated administration | User creation, description modification, and password reset tested |
+| SMB share | Authorized access and file creation succeeded; non-IT access was denied |
+
+## 9. Repository Structure
+
+```text
+.
+├── data/
+│   ├── employees.json
+│   ├── references.json
+│   └── roles.json
+├── docs/
+│   ├── delegation-administration.md
+│   ├── delegation-user-accounts.md
+│   └── network-share-permissions.md
+├── scripts/
+│   └── import-employees.ps1
+├── tests/
+│   └── test-employees.ps1
+└── README.md
 ```
 
-</details>
-<br/>
-<br/>
-<br/>
+### Directory Overview
 
-## 4. Deployment
-<a name="#4-deployment"></a> 
+| Path | Purpose |
+|---|---|
+| `data/` | Employee data and reference data used by the import process |
+| `docs/` | Documentation covering delegated administration, user-account management, and network share permissions |
+| `scripts/` | PowerShell scripts used to automate administrative tasks |
+| `tests/` | Tests for employee import functionality |
+| `README.md` | Project overview, architecture, deployment scope, and validation results |
+## 10. Limitations and Future Improvements
 
-<br/>
+Potential improvements include:
 
-<details>
-<summary>Prerequisites</summary>
- 
-- Physical host: XX GB RAM minimum
-- Hypervisor installed (Here VMWare WorkStation)
-- Windows Server Evaluation ISO (free, 180 days)
-</details>
+- Deploying a dedicated file server instead of hosting the share on a domain controller.
+- Reviewing and refining inherited NTFS permissions for more restrictive file access.
+- Expanding automated validation and deployment scripts.
+- Implementing and documenting a backup and recovery strategy.
+- Exploring Microsoft Entra ID integration and synchronization in a separate phase.
+- Improving infrastructure diagrams and deployment documentation.
 
+## 11. References
 
-<details>
-<summary>Step 1 - Create local network </summary> 
-</details>
-
-
-<details>
-<summary>Step 2 - Create and configure primary domain controller DC01 </summary> 
-
- <br/>
-
-1. Create VM
- 
- <br/>
- 
-2. Give it a fixed IP
-```powershell
-New-NetIPAddress -InterfaceAlias 'Ethernet0' -IPAddress 192.168.100.10 -PrefixLength 24
-```
-
-3. Restart VM
-```powershell
-Restart-Computer
-```
-
-4. Use itself as dns server
-```powershell
-Set-DnsClientServerAddress -InterfaceAlias 'Ethernet0' -ServerAddresses 127.0.0.1
-```
-
-5. Rename VM
-```powershell
-Rename-Computer -NewName 'DC01' -Restart
-```
-</details>
-
-
-<details>
-<summary>Step 3  - Install Active Directory and configure local domain </summary> 
- 
-<br/>
-
- ```powershell
-Install-WindowsFeature -Name AD-Domain-Services, Dns -IncludeManagementTools
-```
-
-<br/>
-
- ```powershell
-Install-ADDSForest `
--DomainName 'adlab.local' `
--ForestMode 'WinThreshold' `
--DomainMode 'WinThreshold' `
--Force                                         
-```
-
-<br/>
-
-  ```powershell
-dcdiag /test:services
-dcdiag /test:advertising
-netdom query fsmo                                           
-```
-</details>
-
-
-<details>
-<summary>Step 4 - Create and configure secondary domain controller DC02 </summary> 
-
-
- <br/>
-
-1. Create VM
- 
- <br/>
- 
-2. Give it a fixed IP
-```powershell
-New-NetIPAddress -InterfaceAlias 'Ethernet0' -IPAddress 192.168.100.11 -PrefixLength 24
-```
-
-3. Restart VM
-```powershell
-Restart-Computer
-```
-
-4. Use DC01 as dns server
-```powershell
-Set-DnsClientServerAddress -InterfaceAlias 'Ethernet0' -ServerAddresses 192.168.100.10
-```
-
-5. Rename VM
-```powershell
-Rename-Computer -NewName 'DC02' -Restart
-```
-
-6. Install Active Directory and configure local domain </summary> 
-
- ```powershell
-Install-WindowsFeature -Name AD-Domain-Services, Dns -IncludeManagementTools
-```
-
-7. Promote as secondary domain controller </summary> 
-
-  ```powershell
-Install-ADDSDomainController`
--DomainName 'adlab.local' `
--Credential (Get-Credential ADLAB\Administrator)
--Force                                         
-```
-
-<br/>
-
-  ```powershell
-repadmin /showrepl
-repadmin /replsummary                                        
-```
-
-</details>
-
-<details>
-<summary>Step 5 - Create AD forest structure and validate </summary>
-</details>
-
-
-<details>
-<summary>Step 6 - Create and configure client </summary> 
-</details>
-
-
-<details>
-<summary>Step 7 - Establish Group Policy Objects </summary> 
-</details>
-
-
-<details>
-<summary>Step 8 - Synchronize local Active Directory with Azure ADConnect cloud </summary> 
-</details>
-
-<br/>
-<br/>
-<br/>
-
-## 5. Results
-<a name="#5-results"></a>
-
-Infrastructure overview :
-
-<!-- Infrastructure screenshots -->
-
-<br/>
-<br/>
-<br/>
-
-## 7. Pricing
-<a name="#7-pricing"></a>
-The estimate below is based on the [AWS Pricing Calculator](https://calculator.aws).  
-
-| Service                            | Selected Option                   | Estimated Monthly*  | Justification |
-|------------------------------------|-----------------------------------|---------------------|---------------|
-| **VMWare Workstation**             | Licence Evaluation (180 days)     | 0 USD               |               |
-| **Windows Server 2022**            | Trial                             | 0 USD               |               |
-| **Windows 10/11 Client**           |                                   | 0 USD               |               |
-| **Microsoft 365 Business Premium** | Trial (30 days)                   | 0 USD               |               |
-| **TOTAL**                          |                                   | **0 USD**           |
-
-\* In production, real costs would lie in Windows Server licences, Microsoft 365 licences per user, hardware and/or cloud instances hosting DCs.  
-
-<br/> 
-<br/>
-<br/>
-
-## 8. Improvements & Next Steps
-<a name="#8-improvements--next-steps"></a>
-
-Potential enhancements to the infrastructure include:  
-- NET-Bios is too old ??
-- 
-- 
- 
-
-<br/>
-<br/>
-<br/>
-
-## 9. References
-<a name="#9-references"></a>  
+- [Microsoft Learn — Active Directory Domain Services](https://learn.microsoft.com/windows-server/identity/ad-ds/)
+- [Microsoft Learn — Group Policy](https://learn.microsoft.com/windows-server/identity/ad-ds/manage/group-policy/group-policy-overview)
+- [Microsoft Learn — Active Directory replication](https://learn.microsoft.com/windows-server/identity/ad-ds/get-started/replication/active-directory-replication-concepts)
+- [Debian Documentation](https://www.debian.org/doc/)
+- [VMware Workstation Pro](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion)
