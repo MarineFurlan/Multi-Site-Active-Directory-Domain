@@ -270,7 +270,7 @@ Write-Output "List of skipped account : $($skippedUsers -join ', ')" ""
 Write-Output "$($createdUsers.count) accounts have been created"
 Write-Output "List of created account : $($createdUsers -join ', ')" ""
 Write-Output "$($failedUsers.count) accounts creation failed"
-Write-Output "List of failed account : $($failedUsers -join ', ')"
+Write-Output "List of failed account : $($failedUsers -join ', ')" ""
 
 # ------------------------------------------------------------
 # Add user to groups
@@ -333,9 +333,9 @@ foreach ($employee in $employees) {
     }
 }
 
-Write-Output "$($failedDptGroupAdd.count) account couldn't have been added to dpt group" ""
-Write-Output "List of accounts with failed dpt_grp addition : $($failedDptGroupAdd -join ', ') "
-Write-Output "$($failedMgmtGroupAdd.count) account couldn't have been added to mgmt group" ""
-Write-Output "List of accounts with failed mgmt_grp addition : $($failedMgmtGroupAdd -join ', ') "
-Write-Output "$($failedAdminGroupAdd.count) account couldn't have been added to admin group" ""
-Write-Output "List of accounts with failed admin_grp addition : $($failedAdminGroupAdd -join ', ') "
+Write-Output "$($failedDptGroupAdd.count) account couldn't have been added to dpt group"
+Write-Output "List of accounts with failed dpt_grp addition : $($failedDptGroupAdd -join ', ')" ""
+Write-Output "$($failedMgmtGroupAdd.count) account couldn't have been added to mgmt group"
+Write-Output "List of accounts with failed mgmt_grp addition : $($failedMgmtGroupAdd -join ', ')" ""
+Write-Output "$($failedAdminGroupAdd.count) account couldn't have been added to admin group"
+Write-Output "List of accounts with failed admin_grp addition : $($failedAdminGroupAdd -join ', ')" ""
