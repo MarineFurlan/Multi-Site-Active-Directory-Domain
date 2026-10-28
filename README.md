@@ -148,8 +148,6 @@ Documentation:
 Documentation:
 - [`docs/network-share-permissions.md`](docs/network-share-permissions.md)
 
-**Lab limitation:** The file share is hosted on a domain controller for demonstration purposes. A dedicated file server would be preferable in a production environment.
-
 ## 7. Deployment Guide
 
 The detailed deployment procedures will be maintained as separate documentation files where appropriate.
