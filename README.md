@@ -148,28 +148,59 @@ Documentation:
 Documentation:
 - [`docs/network-share-permissions.md`](docs/network-share-permissions.md)
 
-## 7. Deployment Guide
+## 7. Deployment and Configuration
 
-The detailed deployment procedures will be maintained as separate documentation files where appropriate.
+The lab was deployed manually in VMware Workstation Pro, with PowerShell used for employee data import and validation.
 
-The deployment covers:
+<details>
+<summary><strong>Infrastructure deployment</strong></summary>
 
-1. Creating the VMware virtual networks and virtual machines.
-2. Configuring static IP addresses and routing.
-3. Installing and promoting the domain controllers.
-4. Configuring AD sites, subnets, and replication.
-5. Creating the OU structure, users, and security groups.
-6. Joining the Windows client to the domain.
-7. Configuring and validating Group Policies.
-8. Delegating user-account administration.
-9. Configuring and testing the SMB share and NTFS permissions.
+1. Create the VMware networks for Bordeaux (`10.10.10.0/24`), Angoulême (`10.10.20.0/24`), and NAT connectivity.
+2. Deploy the Debian 12 router and configure its three network interfaces and IPv4 forwarding.
+3. Install Windows Server 2025 on both domain controllers and assign static IP addresses.
+4. Promote `DC01-BDX` to create the `novera.fr` forest, then join `DC02-ANG` as an additional domain controller.
+5. Configure DNS, Active Directory sites, subnets, and the `BDX-ANG` site link.
+6. Create the site-based OU structure, security groups, and employee accounts.
+7. Join `CL01-BDX` to the domain and configure Group Policies.
+
+</details>
+
+<details>
+<summary><strong>Delegated administration</strong></summary>
+
+- Create the `GG_Bordeaux_IT_Admins` security group.
+- Delegate user-account management within `Bordeaux\Users`.
+- Validate user creation, description modification, and password reset with a delegated account.
+- Verify that the delegated account cannot reset passwords outside its intended administrative scope.
+
+**Note:** The predefined *Create, delete, and manage user accounts* delegation includes account deletion rights. Review the scope carefully before using this configuration outside the lab.
+
+</details>
+
+<details>
+<summary><strong>Network share configuration</strong></summary>
+
+- Create `C:\Shares\IT-Bordeaux` on `DC01-BDX` and publish it as `\\DC01-BDX\IT-Bordeaux`.
+- Grant `GG_Bordeaux_IT` Modify permissions at the SMB share and NTFS levels.
+- Grant `Administrateurs` Full Control at the SMB share level.
+- Test file creation with an authorized IT account and verify access denial for a non-IT account.
+
+**Note:** Inherited NTFS permissions were retained. The share is hosted on a domain controller for lab purposes; a dedicated file server is preferable in production.
+
+</details>
+
+<details>
+<summary><strong>Validation and testing</strong></summary>
+
+- Check domain membership and inter-site connectivity.
+- Verify AD replication using `repadmin /replsummary`.
+- Test the workstation inactivity lock and domain account lockout policies.
+- Validate delegated administration and SMB share access.
+- Run the employee import validation script when its test status needs to be confirmed.
+
+</details>
 
 
-Detailed documentation for the main configuration and administration tasks is available below:
-
-- [Site-Based Administrative Delegation](docs/delegation-administration.md) — delegation scope, permissions, and validation.
-- [User Account Delegation](docs/delegation-user-accounts.md) — delegated user management and access restrictions.
-- [Network Share Permissions](docs/network-share-permissions.md) — SMB share configuration, NTFS permissions, and access validation.
 
 ## 8. Validation Results
 
