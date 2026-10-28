@@ -226,7 +226,6 @@ These results reflect the tests performed during the lab. They do not constitute
 - Add automated validation for DNS, domain controller health, and replication.
 - Implement and test backup and recovery procedures.
 - Explore Microsoft Entra ID integration and directory synchronization as a separate project phase.
-- Improve architecture diagrams and add selected deployment screenshots.
 
 ## 11. References
 
