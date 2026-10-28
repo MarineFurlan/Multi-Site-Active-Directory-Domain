@@ -207,16 +207,26 @@ These results reflect the tests performed during the lab. They do not constitute
 | `scripts/` | PowerShell scripts used to automate administrative tasks |
 | `tests/` | Tests for employee import functionality |
 | `README.md` | Project overview, architecture, deployment scope, and validation results |
+
 ## 10. Limitations and Future Improvements
 
-Potential improvements include:
+### Current Limitations
 
-- Deploying a dedicated file server instead of hosting the share on a domain controller.
-- Reviewing and refining inherited NTFS permissions for more restrictive file access.
-- Expanding automated validation and deployment scripts.
-- Implementing and documenting a backup and recovery strategy.
-- Exploring Microsoft Entra ID integration and synchronization in a separate phase.
-- Improving infrastructure diagrams and deployment documentation.
+- The file share is hosted on `DC01-BDX`, a domain controller. A dedicated file server would provide a clearer separation of roles.
+- Inherited NTFS permissions remain in place on the shared folder. A more restrictive permissions review may be appropriate depending on the intended access policy.
+- The lab validates core Active Directory functionality but does not constitute a full production-readiness assessment.
+- Backup and disaster recovery procedures have not been implemented as part of the current scope.
+- The deployment is only partially automated; not every infrastructure configuration step is performed by script.
+
+### Potential Improvements
+
+- Move file sharing to a dedicated member server.
+- Review NTFS inheritance and document the intended effective permissions.
+- Expand PowerShell automation for repeatable infrastructure deployment.
+- Add automated validation for DNS, domain controller health, and replication.
+- Implement and test backup and recovery procedures.
+- Explore Microsoft Entra ID integration and directory synchronization as a separate project phase.
+- Improve architecture diagrams and add selected deployment screenshots.
 
 ## 11. References
 
