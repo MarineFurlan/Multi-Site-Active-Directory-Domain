@@ -1,146 +1,155 @@
-# NOVERA — Active Directory multi-site
-## Fiche technique : délégation d'administration par site
+# NOVERA — Multi-Site Active Directory
+## Technical Guide: Site-Based Administrative Delegation
 
-**Projet :** LAB — Active Directory Multi-site  
-**Domaine :** `novera.fr`  
-**Périmètre :** délégation de réinitialisation des mots de passe  
-**Environnement :** Windows Server 2025, Windows 11 Pro, RSAT  
-**Statut :** Tests fonctionnels réussis
+**Project:** LAB — Active Directory Multi-Site  
+**Domain:** `novera.fr`  
+**Scope:** Delegated user-account administration  
+**Environment:** Windows Server 2025, Windows 11 Pro, RSAT  
+**Status:** Functional tests completed successfully
 
 ---
 
-## 1. Objectif
+## 1. Objective
 
-Mettre en place une administration déléguée dans Active Directory afin qu'un groupe informatique puisse réinitialiser les mots de passe des utilisateurs de Bordeaux, sans lui accorder les privilèges d'administrateur du domaine.
+Implement delegated administration in Active Directory so that the Bordeaux IT administration group can manage user accounts within its assigned organizational unit (OU) scope, without granting its members Domain Admin privileges.
 
-La configuration doit respecter le principe du moindre privilège : chaque groupe reçoit uniquement les autorisations nécessaires à ses tâches.
+The configuration follows the principle of least privilege: each group should receive only the permissions required for its administrative responsibilities.
 
-## 2. Environnement technique
+The final configuration uses a predefined delegation task that grants broader user-account management permissions than password reset alone. This is a documented design trade-off for the lab.
 
-| Élément | Configuration |
+## 2. Technical Environment
+
+| Component | Configuration |
 |---|---|
-| Domaine Active Directory | `novera.fr` |
-| Contrôleur de domaine Bordeaux | `DC01-BDX` |
-| Contrôleur de domaine Angoulême | `DC02-ANG` |
-| Poste d'administration | `CL01-BDX` |
-| Outil d'administration | RSAT — `dsa.msc` |
-| Compte de test administrateur délégué | `smichel` |
-| Groupe de délégation | `GG_Bordeaux_IT_Admins` |
-| OU Bordeaux ciblée | `OU=Users,OU=Bordeaux,DC=novera,DC=fr` |
-| OU de test | `Lab-Tests` |
+| Active Directory domain | `novera.fr` |
+| Bordeaux domain controller | `DC01-BDX` |
+| Angoulême domain controller | `DC02-ANG` |
+| Administration workstation | `CL01-BDX` |
+| Administration tool | RSAT — `dsa.msc` |
+| Delegated test account | `smichel` |
+| Delegation group | `GG_Bordeaux_IT_Admins` |
+| Target Bordeaux OU | `OU=Users,OU=Bordeaux,DC=novera,DC=fr` |
+| Test OU | `Lab-Tests` |
 
-## 3. Principe de la délégation
+## 3. Delegation Design
 
-Le groupe `GG_Bordeaux_IT_Admins` reçoit le droit de réinitialiser les mots de passe des comptes utilisateurs situés dans le périmètre délégué.
+The `GG_Bordeaux_IT_Admins` group receives delegated permissions to manage user accounts within the designated Bordeaux OU scope.
 
-La délégation est configurée depuis la console **Utilisateurs et ordinateurs Active Directory** (`dsa.msc`), via l'assistant **Déléguer le contrôle**.
+Delegation is configured through **Active Directory Users and Computers** (`dsa.msc`), using the **Delegate Control** wizard.
 
-Tâche déléguée :
+Two delegation stages were performed:
 
-- Réinitialiser les mots de passe utilisateur et forcer le changement de mot de passe à la prochaine ouverture de session.
+1. **Password reset delegation:** the group was granted the task to reset user passwords and require a password change at the next logon.
+2. **User-account management delegation:** the predefined **Create, delete, and manage user accounts** task was subsequently applied to `OU=Users,OU=Bordeaux,DC=novera,DC=fr`.
 
-La délégation initiale sur `OU=Users,OU=Bordeaux` autorise également l'application du droit aux sous-OU concernées, selon les autorisations et l'héritage effectifs.
+The second task grants broader permissions, including the ability to delete user accounts. The final configuration must therefore not be described as password-reset-only delegation.
 
-## 4. Procédure de configuration
+The effective scope depends on the permissions configured on the target OU, their inheritance, and any other permissions assigned to the group or its members.
 
-### 4.1 Préparer un environnement de test
+## 4. Configuration Procedure
 
-1. Créer l'OU `Lab-Tests` sous `Bordeaux\Users`.
-2. Créer un compte utilisateur temporaire `lab.test` dans cette OU.
-3. Utiliser le compte `smichel` pour effectuer les tests depuis `CL01-BDX`.
+### 4.1 Prepare the Test Environment
 
-### 4.2 Tester avant délégation
+1. Create the `Lab-Tests` OU under `Bordeaux\Users`.
+2. Create a temporary test account named `lab.test` in that OU.
+3. Use the `smichel` account to perform the tests from `CL01-BDX`.
 
-1. Ouvrir `dsa.msc` avec `NOVERA\smichel`.
-2. Localiser le compte `lab.test`.
-3. Tenter une réinitialisation de son mot de passe.
-4. Constater le résultat.
+### 4.2 Test Before Delegation
 
-**Résultat observé :** accès refusé.
+1. Open `dsa.msc` as `NOVERA\smichel`.
+2. Locate the `lab.test` account.
+3. Attempt to reset its password.
+4. Record the result.
 
-### 4.3 Déléguer sur l'OU de test
+**Observed result:** Access denied.
 
-1. Sur `DC01-BDX`, ouvrir `dsa.msc` avec un compte administrateur autorisé.
-2. Faire un clic droit sur `Lab-Tests`.
-3. Sélectionner **Déléguer le contrôle**.
-4. Ajouter `GG_Bordeaux_IT_Admins`.
-5. Sélectionner uniquement la tâche de réinitialisation des mots de passe.
-6. Terminer l'assistant.
+### 4.3 Delegate Password Reset on the Test OU
 
-### 4.4 Valider la délégation sur l'OU de test
+1. On `DC01-BDX`, open `dsa.msc` using an authorized administrative account.
+2. Right-click `Lab-Tests`.
+3. Select **Delegate Control**.
+4. Add `GG_Bordeaux_IT_Admins`.
+5. Select the task to reset user passwords and force a password change at the next logon.
+6. Complete the wizard.
 
-Depuis la session de `smichel` sur `CL01-BDX` :
+### 4.4 Validate Delegation on the Test OU
 
-1. Actualiser la console Active Directory.
-2. Ouvrir le compte `lab.test`.
-3. Lancer **Réinitialiser le mot de passe**.
-4. Saisir et confirmer un nouveau mot de passe de test.
-5. Valider l'opération.
+From the `smichel` session on `CL01-BDX`:
 
-**Résultat observé :** réinitialisation réussie.
+1. Refresh the Active Directory Users and Computers console.
+2. Locate the `lab.test` account.
+3. Select **Reset Password**.
+4. Enter and confirm a test password.
+5. Complete the operation.
 
-### 4.5 Étendre la délégation à Bordeaux
+**Observed result:** Password reset succeeded.
 
-Sur `DC01-BDX`, avec un compte administrateur autorisé :
+### 4.5 Extend Delegation to the Bordeaux Users OU
 
-1. Ouvrir `dsa.msc`.
-2. Faire un clic droit sur `Bordeaux\Users`.
-3. Lancer **Déléguer le contrôle**.
-4. Ajouter `GG_Bordeaux_IT_Admins`.
-5. Sélectionner uniquement la tâche de réinitialisation des mots de passe.
-6. Terminer l'assistant.
+On `DC01-BDX`, using an authorized administrative account:
 
-### 4.6 Tester le périmètre Bordeaux
+1. Open `dsa.msc`.
+2. Right-click `Bordeaux\Users`.
+3. Select **Delegate Control**.
+4. Add `GG_Bordeaux_IT_Admins`.
+5. Select the predefined task **Create, delete, and manage user accounts**.
+6. Complete the wizard.
 
-Depuis la session `NOVERA\smichel` sur `CL01-BDX` :
+**Important:** This predefined task grants broader user-account management rights, including account deletion. It should not be treated as equivalent to password-reset-only delegation.
 
-1. Accéder à un compte utilisateur situé dans le périmètre Bordeaux.
-2. Tenter la réinitialisation de son mot de passe.
-3. Vérifier le résultat.
+### 4.6 Test the Bordeaux Scope
 
-**Résultat observé :** réinitialisation réussie.
+From the `NOVERA\smichel` session on `CL01-BDX`:
 
-### 4.7 Tester hors périmètre
+1. Access a user account within the Bordeaux OU scope.
+2. Perform an account-management operation.
+3. Record the result.
 
-Depuis la même session :
+**Observed results:** User creation, description modification, and password reset succeeded within the tested Bordeaux scope.
 
-1. Accéder à un compte de test situé dans une OU d'Angoulême.
-2. Tenter la réinitialisation du mot de passe.
-3. Vérifier le résultat.
+### 4.7 Test Outside the Delegated Scope
 
-**Résultat observé :** opération refusée.
+From the same session:
 
-## 5. Synthèse des tests
+1. Locate a test account in an Angoulême OU.
+2. Attempt to reset its password.
+3. Record the result.
 
-| Test | Résultat | Conclusion |
+**Observed result:** The operation was denied for the tested account outside the delegated Bordeaux scope.
+
+## 5. Test Summary
+
+| Test | Result | Conclusion |
 |---|---|---|
-| Réinitialisation de `lab.test` avant délégation | Accès refusé | Aucun droit suffisant dans les conditions du test |
-| Réinitialisation après délégation sur `Lab-Tests` | Réussite | Le droit délégué fonctionne sur l'OU de test |
-| Réinitialisation dans le périmètre Bordeaux | Réussite | Le droit fonctionne dans le périmètre étendu |
-| Réinitialisation d'un compte d'Angoulême | Accès refusé | L'opération a été refusée sur le compte testé hors périmètre |
+| Reset `lab.test` before delegation | Access denied | The account lacked sufficient permissions under the test conditions |
+| Reset `lab.test` after delegation on `Lab-Tests` | Successful | Password-reset delegation worked on the test OU |
+| User creation within the Bordeaux scope | Successful | The delegated account could create a user in the tested location |
+| Description modification within the Bordeaux scope | Successful | The delegated account could modify the tested user account |
+| Password reset within the Bordeaux scope | Successful | Password reset worked within the tested scope |
+| Password reset on a tested Angoulême account | Access denied | The operation was denied outside the intended Bordeaux scope |
 
-## 6. Résultat et enseignements
+## 6. Results and Lessons Learned
 
-Cette mise en œuvre démontre le fonctionnement d'une délégation ciblée dans Active Directory, sans attribuer à `smichel` le rôle d'administrateur du domaine.
+This implementation demonstrates delegated Active Directory administration without assigning the Domain Admin role to the delegated test account.
 
-Elle permet de mettre en pratique :
+The lab covers:
 
-- La gestion des OU et des groupes de sécurité.
-- La délégation de contrôle Active Directory.
-- Le principe du moindre privilège.
-- Les tests positifs et négatifs des autorisations.
-- L'administration à distance depuis un poste Windows 11 équipé de RSAT.
+- Organizational unit and security group management.
+- Active Directory delegation through the Delegate Control wizard.
+- Least-privilege principles and the implications of predefined delegation tasks.
+- Positive and negative permission tests.
+- Remote administration from a Windows 11 workstation using RSAT.
 
-**Limite des résultats :** le refus observé sur un compte d'Angoulême confirme le résultat de ce test, mais ne prouve pas à lui seul l'absence de toutes les autorisations héritées ou indirectes. Une vérification complémentaire des ACL effectives reste à effectuer.
+**Scope limitation:** The denied operation on an Angoulême account confirms the result of that specific test. It does not, by itself, prove that no inherited or indirect permissions exist elsewhere. A comprehensive review of effective permissions has not been completed.
 
-## 7. Actions restantes
+## 7. Remaining Improvements
 
-- [ ] Vérifier les autorisations effectives sur les OU Bordeaux et Angoulême.
-- [ ] Vérifier que `GG_Bordeaux_IT_Admins` ne possède aucun droit d'administration excessif sur le domaine.
-- [ ] Nettoyer le compte temporaire `lab.test` et l'OU `Lab-Tests`, ou les conserver comme environnement de test documenté.
-- [ ] Conserver les résultats des tests dans le dépôt du projet.
-- [ ] Automatiser ultérieurement l'audit des groupes, des comptes et des délégations avec PowerShell.
+- [ ] Review effective permissions on the Bordeaux and Angoulême OUs.
+- [ ] Verify that `GG_Bordeaux_IT_Admins` has no unintended administrative privileges elsewhere in the domain.
+- [ ] Remove the temporary `lab.test` account and `Lab-Tests` OU, or retain them as a documented test environment.
+- [ ] Preserve relevant test results in the project repository.
+- [ ] Consider automating delegation and group-membership audits with PowerShell.
 
 ---
 
-**Projet NOVERA — Preuve de concept validée : délégation de réinitialisation des mots de passe par périmètre Active Directory.**
+**NOVERA Project — Proof of concept: delegated Active Directory user-account administration by OU scope.**
