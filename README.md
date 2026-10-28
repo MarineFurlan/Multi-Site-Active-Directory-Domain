@@ -1,6 +1,6 @@
 # Multi-Site Active Directory Infrastructure Lab
 
-**Status:** 🟡 Core deployment completed — documentation and final review in progress
+**Status:** 🟢 Done
 
 ## Table of Contents
 
