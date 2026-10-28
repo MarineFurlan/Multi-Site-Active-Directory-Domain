@@ -1,81 +1,83 @@
-# Partage réseau et permissions NTFS
+# Network Share and NTFS Permissions
 
-## 1. Objectif
+## 1. Objective
 
-Mettre en place un partage réseau destiné à l’équipe IT de Bordeaux, avec des autorisations contrôlées à deux niveaux :
-- les permissions de partage SMB ;
-- les permissions NTFS sur le système de fichiers.
+Create a network share for the Bordeaux IT team, with access controlled at two levels:
 
-Cette configuration permet de limiter l’accès au partage aux utilisateurs autorisés et de contrôler leurs droits sur les fichiers et dossiers.
+- SMB share permissions.
+- NTFS permissions on the file system.
 
-## 2. Emplacement et configuration
+This configuration restricts network access to authorized users and controls the operations they can perform on files and folders.
 
-**Serveur hébergeant le partage :** `DC01-BDX`
+## 2. Location and Configuration
 
-**Chemin local :** `C:\Shares\IT-Bordeaux`
+**File server:** `DC01-BDX`
 
-**Chemin réseau :** `\\DC01-BDX\IT-Bordeaux`
+**Local path:** `C:\Shares\IT-Bordeaux`
 
-Le partage est hébergé temporairement sur le contrôleur de domaine `DC01-BDX` dans le cadre du laboratoire. Dans un environnement de production, il serait préférable d’utiliser un serveur de fichiers dédié.
+**Network path:** `\\DC01-BDX\IT-Bordeaux`
 
-## 3. Permissions du partage SMB
+The share is temporarily hosted on the `DC01-BDX` domain controller for lab purposes. In a production environment, a dedicated file server would be preferable.
 
-Les permissions suivantes ont été configurées dans les paramètres de partage avancé :
+## 3. SMB Share Permissions
 
-| Groupe | Autorisation |
+The following permissions were configured in the advanced sharing settings:
+
+| Group | Permission |
 |---|---|
-| `Administrateurs` | Contrôle total |
-| `GG_Bordeaux_IT` | Modification |
+| `Administrateurs` | Full Control |
+| `GG_Bordeaux_IT` | Modify |
 
-L’autorisation générique « Tout le monde » a été retirée.
+The generic **Everyone** permission was removed.
 
-## 4. Permissions NTFS
+## 4. NTFS Permissions
 
-Les permissions NTFS ont été configurées dans l’onglet **Sécurité**, via les paramètres de sécurité avancés du dossier `C:\Shares\IT-Bordeaux`.
+NTFS permissions were configured through the **Security** tab and the advanced security settings for `C:\Shares\IT-Bordeaux`.
 
-| Groupe | Autorisation |
+| Group or entry | Permission |
 |---|---|
-| `GG_Bordeaux_IT` | Modification |
-| Entrées héritées du dossier parent | Conservées |
+| `GG_Bordeaux_IT` | Modify |
+| Inherited entries from the parent folder | Preserved |
 
-L’autorisation accordée à `GG_Bordeaux_IT` s’applique au dossier, aux sous-dossiers et aux fichiers.
+The permission granted to `GG_Bordeaux_IT` applies to the folder, subfolders, and files.
 
-Les autres autorisations héritées n’ont pas été supprimées. Les droits effectifs résultent de l’ensemble des autorisations applicables.
+Other inherited permissions were not removed. Effective access depends on all applicable permissions.
 
-## 5. Tests réalisés
+## 5. Tests Performed
 
-### Test 1 — Accès avec un membre de l’équipe IT
+### Test 1 — Access by an IT Team Member
 
-**Compte utilisé :** `NOVERA\smichel`
+**Account used:** `NOVERA\smichel`
 
-Résultats :
-- accès au partage réseau réussi ;
-- création du fichier `test-acces.txt` réussie ;
-- droits NTFS effectifs examinés dans les paramètres de sécurité avancés.
+Results:
 
-Les droits effectifs affichés autorisent notamment les opérations de lecture et de création. Certaines opérations privilégiées, telles que la modification des autorisations et l’appropriation, ne sont pas autorisées.
+- Network share access succeeded.
+- Creation of `test-acces.txt` succeeded.
+- Effective NTFS permissions were reviewed in the advanced security settings.
 
-### Test 2 — Accès avec un utilisateur non-IT
+The effective permissions shown allowed operations including reading and creating files. Certain privileged operations, such as changing permissions and taking ownership, were not allowed.
 
-Un compte n’appartenant pas à `GG_Bordeaux_IT` a tenté d’ouvrir `\\DC01-BDX\IT-Bordeaux`.
+### Test 2 — Access by a Non-IT User
 
-**Résultat :** accès refusé.
+A user who was not a member of `GG_Bordeaux_IT` attempted to open `\\DC01-BDX\IT-Bordeaux`.
 
-Ce résultat confirme que l’accès réseau au partage est limité par les autorisations SMB configurées.
+**Result:** Access denied.
 
-## 6. Principe de sécurité
+This confirms that network access to the share is restricted by the configured SMB permissions.
 
-L’accès à un fichier via le réseau dépend à la fois des permissions SMB et des permissions NTFS. Les droits effectifs correspondent aux autorisations compatibles accordées par les deux couches.
+## 6. Security Principles
 
-Les permissions SMB contrôlent l’accès au partage réseau ; les permissions NTFS contrôlent les opérations possibles sur les fichiers et dossiers.
+Access to a file over the network depends on both SMB share permissions and NTFS permissions. Effective access is determined by the permissions allowed by both layers.
 
-## 7. État de validation
+SMB permissions control access to the network share, while NTFS permissions control the operations that can be performed on files and folders.
 
-- [x] Création du dossier partagé
-- [x] Configuration des permissions SMB
-- [x] Configuration des permissions NTFS pour `GG_Bordeaux_IT`
-- [x] Test d’accès positif avec un membre de l’équipe IT
-- [x] Test d’accès négatif avec un utilisateur non-IT
-- [x] Vérification des droits NTFS effectifs
+## 7. Validation Status
 
-**Remarque :** le test négatif confirme le refus d’accès au partage, mais ne permet pas à lui seul d’isoler l’effet des permissions NTFS, puisque les permissions SMB peuvent déjà bloquer l’accès.
+- [x] Shared folder created
+- [x] SMB share permissions configured
+- [x] NTFS permissions configured for `GG_Bordeaux_IT`
+- [x] Positive access test performed with an IT team member
+- [x] Negative access test performed with a non-IT user
+- [x] Effective NTFS permissions reviewed
+
+**Note:** The negative access test confirms that access to the share was denied, but it does not isolate the effect of NTFS permissions because SMB share permissions may already block access.
