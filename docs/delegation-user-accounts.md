@@ -1,70 +1,71 @@
-# Délégation de la gestion des comptes utilisateurs — Bordeaux
+# Delegated User Account Management — Bordeaux
 
-## 1. Objectif
+## 1. Objective
 
-Permettre à l’équipe IT de Bordeaux de gérer les comptes utilisateurs de son site sans lui accorder de droits de gestion équivalents sur Angoulême ni sur l’ensemble du domaine.
+Allow the Bordeaux IT team to manage user accounts within its site without granting equivalent administrative rights over Angoulême or the entire domain.
 
-## 2. Périmètre
+## 2. Scope
 
-- **Domaine :** `novera.fr`
-- **OU cible :** `Bordeaux\Users`
-- **Groupe bénéficiaire :** `GG_Bordeaux_IT_Admins`
-- **Portée :** l’OU `Bordeaux\Users` et ses sous-OU, notamment les services IT, Accounting, HR, Data, Cybersecurity et `Lab-Tests`.
+- **Domain:** `novera.fr`
+- **Target OU:** `Bordeaux\Users`
+- **Delegated group:** `GG_Bordeaux_IT_Admins`
+- **Scope:** The `Bordeaux\Users` OU and its child OUs, including IT, Accounting, HR, Data, Cybersecurity, and `Lab-Tests`.
 
-Les droits sont configurés sur l’OU parente afin d’être hérités par les sous-OU concernées.
+Permissions are configured on the parent OU so that they can be inherited by the relevant child OUs.
 
-## 3. Délégations configurées
+## 3. Configured Delegations
 
-### Lecture et réinitialisation des mots de passe
+### Read Access and Password Reset
 
-Une première délégation accorde au groupe :
-- la lecture de toutes les propriétés des utilisateurs descendants ;
-- la réinitialisation des mots de passe et la possibilité de forcer le changement au prochain logon.
+An initial delegation grants the group:
 
-### Création et gestion des comptes
+- Read access to all properties of descendant user objects.
+- Permission to reset user passwords and require a password change at the next logon.
 
-Une seconde délégation a été configurée à l’aide de l’assistant graphique **Délégation de contrôle** :
+### User Account Creation and Management
 
-1. Ouvrir `dsa.msc` avec un compte administrateur du domaine.
-2. Naviguer vers `novera.fr → Bordeaux → Users`.
-3. Clic droit sur **Users → Délégation de contrôle**.
-4. Ajouter `GG_Bordeaux_IT_Admins`.
-5. Sélectionner la tâche prédéfinie **Créer, supprimer et gérer les comptes utilisateurs**.
-6. Terminer l’assistant.
+A second delegation was configured using the graphical **Delegate Control** wizard:
 
-**Attention :** cette tâche prédéfinie inclut le droit de supprimer des comptes utilisateurs. Ce compromis a été accepté pour privilégier une configuration simple dans le laboratoire.
+1. Open `dsa.msc` using a domain administrator account.
+2. Navigate to `novera.fr → Bordeaux → Users`.
+3. Right-click **Users** and select **Delegate Control**.
+4. Add `GG_Bordeaux_IT_Admins`.
+5. Select the predefined task **Create, delete, and manage user accounts**.
+6. Complete the wizard.
 
-## 4. Contrôles des autorisations
+**Important:** This predefined task includes permission to delete user accounts. This trade-off was accepted to keep the lab configuration straightforward.
 
-- Les autorisations de lecture et de réinitialisation des mots de passe sont présentes dans les ACL de `Bordeaux\Users`.
-- Leur héritage a été vérifié dans la sous-OU `Bordeaux\Users\IT`.
-- Une entrée d’autorisation vide, définie directement sur `Bordeaux\Users`, a été supprimée après vérification qu’aucune permission n’y était cochée.
-- Aucune entrée ACL correspondant à `GG_Bordeaux_IT_Admins` n’a été trouvée lors de l’inspection de `Angouleme\Users`.
-- Le groupe contient uniquement des comptes utilisateurs, sans groupe imbriqué.
-- Les membres du groupe ont été vérifiés et jugés légitimes pour cette fonction.
+## 4. Permission Checks
 
-## 5. Tests fonctionnels réalisés
+- Read and password-reset permissions were found in the ACLs of `Bordeaux\Users`.
+- Inheritance of these permissions was verified in the `Bordeaux\Users\IT` child OU.
+- An empty permission entry defined directly on `Bordeaux\Users` was removed after confirming that no permission was selected.
+- No ACL entry corresponding to `GG_Bordeaux_IT_Admins` was found during the inspection of `Angouleme\Users`.
+- The group contains user accounts only, with no nested groups.
+- The group members were reviewed and considered appropriate for this responsibility.
 
-Les tests ont été effectués depuis `CL01-BDX`, avec le compte `NOVERA\smichel`, membre de `GG_Bordeaux_IT_Admins`.
+## 5. Functional Tests
 
-| Test | Résultat |
+Tests were performed from `CL01-BDX` using the `NOVERA\smichel` account, which is a member of `GG_Bordeaux_IT_Admins`.
+
+| Test | Result |
 |---|---|
-| Réinitialiser le mot de passe d’un utilisateur de Bordeaux | Réussi |
-| Créer le compte de test `lab.delegation` dans `Bordeaux\Users\Lab-Tests` | Réussi |
-| Modifier la description de `lab.delegation` | Réussi |
-| Réinitialiser le mot de passe de `lab.delegation` | Réussi |
-| Réinitialiser le mot de passe du compte testé dans Angoulême | Refusé |
-| Vérifier la disponibilité de l’option de création dans Angoulême | Option non disponible dans l’interface testée |
-| Vérifier la disponibilité de l’option de création au-dessus de `Bordeaux\Users` | Option non disponible dans l’interface testée |
+| Reset the password of a Bordeaux user | Successful |
+| Create the test account `lab.delegation` under `Bordeaux\Users\Lab-Tests` | Successful |
+| Modify the description of `lab.delegation` | Successful |
+| Reset the password of `lab.delegation` | Successful |
+| Reset the password of the tested account in Angoulême | Denied |
+| Check whether the account-creation option was available in Angoulême | Option unavailable in the tested interface |
+| Check whether the account-creation option was available above `Bordeaux\Users` | Option unavailable in the tested interface |
 
-## 6. Résultat et limites
+## 6. Results and Limitations
 
-La délégation est fonctionnelle pour les opérations testées et son périmètre apparent correspond à l’objectif du laboratoire.
+The delegation worked for the operations tested, and its observed scope is consistent with the lab's objectives.
 
-L’absence d’option dans l’interface et les tests effectués constituent des indices cohérents, mais ne remplacent pas un audit exhaustif des autorisations effectives. D’autres ACL ou appartenances à des groupes pourraient accorder des droits supplémentaires.
+The unavailable interface options and the functional tests provide supporting evidence, but they do not replace a comprehensive audit of effective permissions. Other ACL entries or group memberships could grant additional rights.
 
-## 7. Nettoyage recommandé
+## 7. Recommended Cleanup
 
-Après validation de la procédure, supprimer le compte de test `lab.delegation` s’il n’est plus nécessaire, ainsi que tout autre compte de test temporaire devenu inutile.
+After validating the procedure, remove the `lab.delegation` test account if it is no longer needed, along with any other temporary test accounts that are no longer required.
 
-**État :** délégation configurée et tests fonctionnels réalisés le 27 octobre 2026.
+**Status:** Delegation configured and functional tests performed on October 27, 2026.
