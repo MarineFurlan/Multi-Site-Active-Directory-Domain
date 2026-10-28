@@ -191,6 +191,8 @@ The lab's core features have been validated through functional tests.
 These results reflect the tests performed during the lab. They do not constitute a complete production-readiness or disaster-recovery assessment.
 
 ## 9. Repository Structure
+<details>
+<summary>View repository structure</summary>
 
 ```text
 .
@@ -199,6 +201,16 @@ These results reflect the tests performed during the lab. They do not constitute
 │   ├── references.json
 │   └── roles.json
 ├── docs/
+│   ├── images/
+│   │   └── DNS_manager.png
+│   │   └── GPO_strategies.png
+│   │   └── Group_delegation_ITAdmins.png
+│   │   └── ITFolder_permissions.png
+│   │   └── Network_access_validation.png
+│   │   └── Network_diagramm.png
+│   │   └── OU_structure.png
+│   │   └── Server_replication_results.png
+│   │   └── Sites_structure.png
 │   ├── delegation-administration.md
 │   ├── delegation-user-accounts.md
 │   └── network-share-permissions.md
@@ -208,6 +220,7 @@ These results reflect the tests performed during the lab. They do not constitute
 │   └── test-employees.ps1
 └── README.md
 ```
+</details>
 
 ### Directory Overview
 
