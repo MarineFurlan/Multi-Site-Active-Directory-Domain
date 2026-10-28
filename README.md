@@ -51,7 +51,7 @@ The lab consists of two Active Directory sites connected through a Debian router
 
 The two domain controllers belong to the same forest and domain: `novera.fr`.
 
-![Network_diagramm.png](docs/Network_diagramm.png)
+![Network_diagramm.png](images/Network_diagramm.png)
 
 ### Virtual Machines
 
@@ -107,7 +107,7 @@ This design supports location-based administration and delegation while keeping 
 - Site subnets and the `BDX-ANG` site link configured.
 - Inter-site replication validated after the initial synchronization period.
 
-![Sites_structure.png](docs/Sites_structure.png)
+![Sites_structure.png](images/Sites_structure.png)
 
 ### Organizational Structure and Identity Management
 
@@ -116,7 +116,7 @@ This design supports location-based administration and delegation while keeping 
 - Employee data imported using PowerShell automation.
 - Employee import tests maintained in the `tests/` directory.
 
-![OU_structure.png](docs/OU_structure.png)
+![OU_structure.png](images/OU_structure.png)
 
 Relevant files:
 - [`scripts/import-employees.ps1`](scripts/import-employees.ps1)
@@ -127,16 +127,13 @@ Relevant files:
 - Workstation inactivity lock policy configured and tested.
 - Domain account lockout policy configured and tested.
 
-![GPO_strategies.png](docs/GPO_strategies.png)
+![GPO_strategies.png](images/GPO_strategies.png)
 
 ### Delegated Administration
 
 - Delegated user-account administration configured for the Bordeaux IT administration group.
 - User creation, description modification, and password reset tested with a delegated account.
 
-Documentation:
-- [`docs/delegation-administration.md`](docs/delegation-administration.md)
-- [`docs/delegation-user-accounts.md`](docs/delegation-user-accounts.md)
 
 ### Network Share and File Permissions
 
@@ -145,8 +142,6 @@ Documentation:
 - `Administrateurs` granted Full Control at the SMB share level.
 - Access tested with an authorized IT user and a non-IT user.
 
-Documentation:
-- [`docs/network-share-permissions.md`](docs/network-share-permissions.md)
 
 ## 7. Deployment and Configuration
 
@@ -217,7 +212,7 @@ The lab's core features have been validated through functional tests.
 | SMB share access | Confirmed file creation by an authorized IT user and access denial for a non-IT user | Successful |
 | Employee import | PowerShell import script and corresponding test file are present in the repository | Implementation present; test status to be documented separately |
 
-![Server_replication_results.png](docs/Server_replication_results.png)
+![Server_replication_results.png](images/Server_replication_results.png)
 
 These results reflect the tests performed during the lab. They do not constitute a complete production-readiness or disaster-recovery assessment.
 
