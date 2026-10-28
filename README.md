@@ -51,7 +51,7 @@ The lab consists of two Active Directory sites connected through a Debian router
 
 The two domain controllers belong to the same forest and domain: `novera.fr`.
 
-![Network_diagramm.png](docs/images/Network_diagramm.png)
+![Network_diagramm.png](docs/Network_diagramm.png)
 
 ### Virtual Machines
 
@@ -107,7 +107,7 @@ This design supports location-based administration and delegation while keeping 
 - Site subnets and the `BDX-ANG` site link configured.
 - Inter-site replication validated after the initial synchronization period.
 
-![Sites_structure.png](docs/images/Sites_structure.png)
+![Sites_structure.png](docs/Sites_structure.png)
 
 ### Organizational Structure and Identity Management
 
@@ -116,7 +116,7 @@ This design supports location-based administration and delegation while keeping 
 - Employee data imported using PowerShell automation.
 - Employee import tests maintained in the `tests/` directory.
 
-![OU_structure.png](docs/images/OU_structure.png)
+![OU_structure.png](docs/OU_structure.png)
 
 Relevant files:
 - [`scripts/import-employees.ps1`](scripts/import-employees.ps1)
@@ -127,7 +127,7 @@ Relevant files:
 - Workstation inactivity lock policy configured and tested.
 - Domain account lockout policy configured and tested.
 
-![GPO_strategies.png](docs/images/GPO_strategies.png)
+![GPO_strategies.png](docs/GPO_strategies.png)
 
 ### Delegated Administration
 
@@ -217,7 +217,7 @@ The lab's core features have been validated through functional tests.
 | SMB share access | Confirmed file creation by an authorized IT user and access denial for a non-IT user | Successful |
 | Employee import | PowerShell import script and corresponding test file are present in the repository | Implementation present; test status to be documented separately |
 
-![Server_replication_results.png](docs/images/Server_replication_results.png)
+![Server_replication_results.png](docs/Server_replication_results.png)
 
 These results reflect the tests performed during the lab. They do not constitute a complete production-readiness or disaster-recovery assessment.
 
@@ -242,9 +242,6 @@ These results reflect the tests performed during the lab. They do not constitute
 │   │   └── OU_structure.png
 │   │   └── Server_replication_results.png
 │   │   └── Sites_structure.png
-│   ├── delegation-administration.md
-│   ├── delegation-user-accounts.md
-│   └── network-share-permissions.md
 ├── scripts/
 │   └── import-employees.ps1
 ├── tests/
