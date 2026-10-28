@@ -51,7 +51,7 @@ The lab consists of two Active Directory sites connected through a Debian router
 
 The two domain controllers belong to the same forest and domain: `novera.fr`.
 
-<!-- Replace this placeholder with the current architecture diagram. -->
+![Network_diagramm.png](docs/images/Network_diagramm.png)
 
 ### Virtual Machines
 
@@ -160,7 +160,12 @@ The deployment covers:
 8. Delegating user-account administration.
 9. Configuring and testing the SMB share and NTFS permissions.
 
-<!-- Add links to detailed deployment guides as they are finalized. -->
+
+Detailed documentation for the main configuration and administration tasks is available below:
+
+- [Site-Based Administrative Delegation](docs/delegation-administration.md) — delegation scope, permissions, and validation.
+- [User Account Delegation](docs/delegation-user-accounts.md) — delegated user management and access restrictions.
+- [Network Share Permissions](docs/network-share-permissions.md) — SMB share configuration, NTFS permissions, and access validation.
 
 ## 8. Validation Results
 
