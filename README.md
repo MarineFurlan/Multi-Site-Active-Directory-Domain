@@ -107,12 +107,16 @@ This design supports location-based administration and delegation while keeping 
 - Site subnets and the `BDX-ANG` site link configured.
 - Inter-site replication validated after the initial synchronization period.
 
+![Sites_structure.png](docs/images/Sites_structure.png)
+
 ### Organizational Structure and Identity Management
 
 - Site-based organizational unit hierarchy created.
 - Departmental user OUs and security groups configured.
 - Employee data imported using PowerShell automation.
 - Employee import tests maintained in the `tests/` directory.
+
+![OU_structure.png](docs/images/OU_structure.png)
 
 Relevant files:
 - [`scripts/import-employees.ps1`](scripts/import-employees.ps1)
@@ -122,6 +126,8 @@ Relevant files:
 
 - Workstation inactivity lock policy configured and tested.
 - Domain account lockout policy configured and tested.
+
+![GPO_strategies.png](docs/images/GPO_strategies.png)
 
 ### Delegated Administration
 
@@ -181,6 +187,8 @@ The lab's core features have been validated through functional tests.
 | Delegated administration | Tested user creation, description modification, and password reset | Successful |
 | SMB share access | Confirmed file creation by an authorized IT user and access denial for a non-IT user | Successful |
 | Employee import | PowerShell import script and corresponding test file are present in the repository | Implementation present; test status to be documented separately |
+
+![Server_replication_results.png](docs/images/Server_replication_results.png)
 
 These results reflect the tests performed during the lab. They do not constitute a complete production-readiness or disaster-recovery assessment.
 
