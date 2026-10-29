@@ -9,17 +9,17 @@ $failed_tests = 0
 # DATA INTEGRITY
 # Does the data exist and is it usable ?
 # ========================================================================================================
-Write-Output "========== DATA INTEGRITY =========="
+Write-Output "========== DATA INTEGRITY ==========" ""
 # ------------------------------------------------------------
 # Employee count
 # ------------------------------------------------------------
 $targeted_employees_count = 98
 $employees_count = $employees.Count
 if ($targeted_employees_count -eq $employees_count) {
-    Write-Output "[PASS] Employees count: $employees_count / $targeted_employees_count" ""
+    Write-Output "[PASS] Employees count: $employees_count / $targeted_employees_count"
 }
 else {
-    Write-Output "[FAIL] Employees count: $employees_count / $targeted_employees_count" ""
+    Write-Output "[FAIL] Employees count: $employees_count / $targeted_employees_count"
     $failed_tests++
 }
 
@@ -34,10 +34,10 @@ $no_usernames = foreach ($employee in $employees) {
 }
 
 if ($no_usernames -eq $null){
-    Write-Output "[PASS] Username presence" ""
+    Write-Output "[PASS] Username presence"
 }
 else {
-Write-Output "[FAIL] Employees without username: $no_usernames" ""
+Write-Output "[FAIL] Employees without username: $no_usernames"
 $failed_tests++
 }
 
@@ -49,10 +49,10 @@ $remaining_collisions = $employees |
     Where-Object Count -GT 1
 
 if ($remaining_collisions -eq $null) {
-    Write-Output "[PASS] Username uniqueness" ""
+    Write-Output "[PASS] Username uniqueness"
 }
 else {
-    Write-Output "[FAIL] Duplicate usernames:" ""
+    Write-Output "[FAIL] Duplicate usernames:"
     foreach ($collision in $remaining_collisions) {
         Write-Output "$($collision.Name):"
             foreach ($employee in $collision.Group) {
@@ -72,10 +72,10 @@ $no_emails = foreach ($employee in $employees) {
 }
 
 if ($no_emails -eq $null){
-    Write-Output "[PASS] Email presence" ""
+    Write-Output "[PASS] Email presence"
 }
 else {
-Write-Output "[FAIL] Employees without email: $no_emails" ""
+Write-Output "[FAIL] Employees without email: $no_emails"
 $failed_tests++
 }
 
@@ -89,10 +89,10 @@ $no_ou_targets = foreach ($employee in $employees) {
 }
 
 if ($no_ou_targets -eq $null) {
-    Write-Output "[PASS] OU target presence" ""
+    Write-Output "[PASS] OU target presence"
 }
 else {
-    Write-Output "[FAIL] Employees without an OU target: $no_ou_targets" ""
+    Write-Output "[FAIL] Employees without an OU target: $no_ou_targets"
     $failed_tests++
 }
 
@@ -108,10 +108,10 @@ $invalid_manager = foreach ($employee in $employees) {
 }
 
 if ($invalid_manager -eq $null) {
-    Write-Output "[PASS] Manager references are valid" ""
+    Write-Output "[PASS] Manager references are valid"
 }
 else {
-    Write-Output "[FAIL] Invalid manager references: $invalid_manager" ""
+    Write-Output "[FAIL] Invalid manager references: $invalid_manager"
     $failed_tests++
 }
 
@@ -147,7 +147,7 @@ else {
 # STRUCTURE / TYPES
 # Does the data have the correct type
 # ========================================================================================================
-Write-Output "========== STRUCTURE / TYPES =========="
+Write-Output "========== STRUCTURE / TYPES ==========" ""
 
 $boolean_attributes= @(
     "is_manager"
@@ -217,7 +217,7 @@ else {
 # JOB RULES
 # Does the data follows Novera rules ?
 # ========================================================================================================
-Write-Output "========== JOB RULES =========="
+Write-Output "========== JOB RULES ==========" ""
 
 # ------------------------------------------------------------
 # Manager detection
@@ -232,11 +232,11 @@ $invalid_is_manager_att = foreach ($employee in $employees) {
 }
 
 if ($invalid_is_manager_att -ne $null) {
-   Write-Output "[FAIL] Invalid is_manager values: $invalid_is_manager_att" ""
+   Write-Output "[FAIL] Invalid is_manager values: $invalid_is_manager_att"
    $failed_tests++
 }
 else {
-    Write-Output "[PASS] is_manager matches job title" ""
+    Write-Output "[PASS] is_manager matches job title"
 }
 
 
@@ -252,11 +252,11 @@ $invalid_is_admin_att = foreach ($employee in $employees) {
 }
 
 if ($invalid_is_admin_att -ne $null) {
-   Write-Output "[FAIL] Invalid is_it_admin values: $invalid_is_admin_att" ""
+   Write-Output "[FAIL] Invalid is_it_admin values: $invalid_is_admin_att"
    $failed_tests++
 }
 else {
-    Write-Output "[PASS] is_it_admin matches job title" ""
+    Write-Output "[PASS] is_it_admin matches job title"
 }
 
 
@@ -271,7 +271,7 @@ $invalid_null_group = foreach($employee in $employees){
         (($employee.is_manager -eq $true) -and ($employee.mgmt_grp -eq $null)) -or
         (($employee.is_manager -eq $false) -and ($employee.mgmt_grp -ne $null))
     ) {
-        Write-Output "Wrong mgmt_grp value : $($employee.id)" ""
+        Write-Output "Wrong mgmt_grp value : $($employee.id)"
     }
 
     # admin_grp attribute
@@ -279,12 +279,12 @@ $invalid_null_group = foreach($employee in $employees){
         (($employee.is_it_admin -eq $true) -and ($employee.admin_grp -eq $null)) -or
         (($employee.is_it_admin -eq $false) -and ($employee.admin_grp -ne $null))
     ) {
-        Write-Output "Wrong admin_grp value : $($employee.id)" ""
+        Write-Output "Wrong admin_grp value : $($employee.id)"
     }
 }
 
 if ($invalid_null_group -ne $null) {
-    Write-Output "[FAIL] Invalid manager/admin group values: $($invalid_null_group -join ", ")"
+    Write-Output "[FAIL] Invalid manager/admin group values: $($invalid_null_group -join ", ")" ""
     $failed_tests++
 }
 else {
@@ -300,7 +300,7 @@ else {
 # DATA COHERENCE
 # Does every data tell the same story ?
 # ========================================================================================================
-Write-Output "========== DATA COHERENCE =========="
+Write-Output "========== DATA COHERENCE ==========" ""
 # ------------------------------------------------------------
 # Email consistency
 # ------------------------------------------------------------
@@ -311,10 +311,10 @@ $invalid_emails = foreach ($employee in $employees){
 }
 
 if ($invalid_emails -eq $null) {
-       Write-Output "[PASS] Email matches username" ""
+       Write-Output "[PASS] Email matches username"
     }
 else {
-        Write-Output "[FAIL] Emails inconsistent with usernames: $($invalid_emails -join "; ")" ""
+        Write-Output "[FAIL] Emails inconsistent with usernames: $($invalid_emails -join "; ")"
         $failed_tests++
 }
 
@@ -338,11 +338,11 @@ $invalid_mgmt_grp = foreach ($employee in $employees) {
 }
 
 if ($invalid_mgmt_grp -ne $null) {
-    Write-Output "[FAIL] Invalid mgmt_grp values: $invalid_mgmt_grp" ""
+    Write-Output "[FAIL] Invalid mgmt_grp values: $invalid_mgmt_grp"
     $failed_tests++
 }
 else {
-    Write-Output "[PASS] Management group naming" ""
+    Write-Output "[PASS] Management group naming"
 }
 
 
@@ -366,11 +366,11 @@ $invalid_admin_grp = foreach ($employee in $employees) {
 }
 
 if ($invalid_admin_grp -ne $null) {
-    Write-Output "[FAIL] Invalid admin_grp values: $invalid_admin_grp" ""
+    Write-Output "[FAIL] Invalid admin_grp values: $invalid_admin_grp"
     $failed_tests++
 }
 else {
-    Write-Output "[PASS] IT admin group naming" ""
+    Write-Output "[PASS] IT admin group naming"
 }
 
 # ------------------------------------------------------------
@@ -402,7 +402,7 @@ else {
 # ========================================================================================================
 # TESTS OVERVIEW
 # ========================================================================================================
-Write-Output "========== TEST SUMMARY =========="
+Write-Output "========== TEST SUMMARY ==========" ""
 Write-Output "Failed tests: $failed_tests"
 if ($failed_tests -gt 0){
     exit 1
