@@ -179,7 +179,7 @@ $invalid_types = foreach ($employee in $employees) {
 # ------------------------------------------------------------
     foreach ($boolean_attribute in $boolean_attributes){
         if ($employee.$boolean_attribute -isnot [bool]) {
-            Write-Output "`nWrong $boolean_attribute value type : $($employee.id)"
+            Write-Output "`nWrong $boolean_attribute value type : $($employee.id) $($employee.username)"
         }
     }
 
@@ -188,7 +188,7 @@ $invalid_types = foreach ($employee in $employees) {
 # ------------------------------------------------------------
     foreach ($string_attribute in $string_attributes){
         if ($employee.$string_attribute -isnot [string]) {
-            Write-Output "`nWrong $string_attribute value type : $($employee.id)"
+            Write-Output "`nWrong $string_attribute value type : $($employee.id) $($employee.username)"
         }
     }
 
@@ -197,7 +197,7 @@ $invalid_types = foreach ($employee in $employees) {
 # ------------------------------------------------------------
    foreach ($string_or_null_attribute in $string_or_null_attributes){
         if (-not (($employee.$string_or_null_attribute -is [string]) -or ($employee.$string_or_null_attribute -eq $null))) {
-            Write-Output "`nWrong $string_or_null_attribute value type : $($employee.id)"
+            Write-Output "`nWrong $string_or_null_attribute value type : $($employee.id) $($employee.username)"
         }
     }
 }
