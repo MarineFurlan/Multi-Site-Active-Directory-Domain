@@ -24,9 +24,11 @@ This project documents the deployment and configuration of a multi-site Active D
 
 The lab simulates a company operating across two French locations: Bordeaux and Angoulême. Each site has its own subnet and domain controller, while both locations belong to the same Active Directory forest.
 
-The infrastructure is built with VMware Workstation Pro, Windows Server 2025, Windows 11 Pro, and a Debian 12 router.
-
-The project focuses on Active Directory administration, multi-site replication, organizational unit design, Group Policy management, delegated administration, network connectivity, and file access permissions.
+The infrastructure is built with :
+- VMware Workstation Pro
+- Windows Server 2025
+- Windows 11 Pro
+- Debian 12 router
 
 ### Business Scenario
 
