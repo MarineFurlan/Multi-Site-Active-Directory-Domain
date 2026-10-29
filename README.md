@@ -236,13 +236,6 @@ The core infrastructure components were validated through functional checks perf
 | SMB share access | Access `\\DC01-BDX\IT-Bordeaux` using an authorized member of `GG_Bordeaux_IT`, then create a test file. Repeat the access check with a non-IT account. | The authorized IT user can create a file; the tested non-IT account is denied access.                                                                           |[`SMB_share_access_GRP.png`](images/SMB_share_access_GRP.png) [`SMB_share_access_IT.png`](images/SMB_share_access_IT.png) [`SMB_share_access_NonIT.png`](images/SMB_share_access_NonIT.png)
 | Employee import | Review `scripts/import-employees.ps1` and `tests/test-employees.ps1`. Run the test script in the intended lab environment when validating the import process. | The script and test file are present in the repository. Test execution results must be recorded separately before claiming that the import tests pass.          |
 
-### Relevant Files and Evidence
-
-The following screenshots provide visual evidence of selected configuration and validation steps.
-
-- **Network access validation:** [`Network_access_validation.png`](images/Network_access_validation.png)
-- **DNS configuration:** [`DNS_manager.png`](images/DNS_manager.png)
-
 These results document the functional checks performed in this lab. They do not constitute a complete production-readiness, security-audit, or disaster-recovery assessment.
 
 <br/>  
