@@ -9,17 +9,17 @@ $failed_tests = 0
 # DATA INTEGRITY
 # Does the data exist and is it usable ?
 # ========================================================================================================
+Write-Output "========== DATA INTEGRITY =========="
 # ------------------------------------------------------------
 # Employee count
 # ------------------------------------------------------------
-Write-Output "COUNTING EMPLOYEES IN JSON FILE ..."
 $targeted_employees_count = 98
 $employees_count = $employees.Count
 if ($targeted_employees_count -eq $employees_count) {
-    Write-Output "[PASS] Employees count: $employees_count" ""
+    Write-Output "[PASS] Employees count: $employees_count / $targeted_employees_count" ""
 }
 else {
-    Write-Output "[FAIL] Employees count: $employees_count" ""
+    Write-Output "[FAIL] Employees count: $employees_count / $targeted_employees_count" ""
     $failed_tests++
 }
 
@@ -27,7 +27,6 @@ else {
 # ------------------------------------------------------------
 # Username presence
 # ------------------------------------------------------------
-Write-Output "TESTING USERNAME PRESENCE FOR EACH EMPLOYEE ..."
 $no_usernames = foreach ($employee in $employees) {
     if ($employee.username -eq $null) {
         Write-Output $employee.id
@@ -35,27 +34,25 @@ $no_usernames = foreach ($employee in $employees) {
 }
 
 if ($no_usernames -eq $null){
-    Write-Output "[PASS] Every employee has a username" ""
+    Write-Output "[PASS] Username presence" ""
 }
 else {
-Write-Output "[FAIL] List of employees without username: $no_usernames" ""
+Write-Output "[FAIL] Employees without username: $no_usernames" ""
 $failed_tests++
 }
 
 # ------------------------------------------------------------
 # Username duplicates
 # ------------------------------------------------------------
-Write-Output "TESTING USERNAME DUPLICATES ..."
-
 $remaining_collisions = $employees |
     Group-Object -Property username |
     Where-Object Count -GT 1
 
 if ($remaining_collisions -eq $null) {
-    Write-Output "[PASS] There is no duplicated username" ""
+    Write-Output "[PASS] Username uniqueness" ""
 }
 else {
-    Write-Output "[FAIL] List of employees with the same username:" ""
+    Write-Output "[FAIL] Duplicate usernames:" ""
     foreach ($collision in $remaining_collisions) {
         Write-Output "$($collision.Name):"
             foreach ($employee in $collision.Group) {
@@ -68,7 +65,6 @@ else {
 # ------------------------------------------------------------
 # Email presence
 # ------------------------------------------------------------
-Write-Output "TESTING EMAIL PRESENCE FOR EACH EMPLOYEE ..."
 $no_emails = foreach ($employee in $employees) {
     if ($employee.email -eq $null) {
         Write-Output $employee.id
@@ -76,18 +72,16 @@ $no_emails = foreach ($employee in $employees) {
 }
 
 if ($no_emails -eq $null){
-    Write-Output "[PASS] Every employee has an email" ""
+    Write-Output "[PASS] Email presence" ""
 }
 else {
-Write-Output "[FAIL] List of employees without email: $no_emails" ""
+Write-Output "[FAIL] Employees without email: $no_emails" ""
 $failed_tests++
 }
 
 # ------------------------------------------------------------
 # OU target presence
 # ------------------------------------------------------------
-Write-Output "TESTING OU TARGET FOR EACH EMPLOYEE ..."
-
 $no_ou_targets = foreach ($employee in $employees) {
     if ($employee.ou_dn -eq $null) {
         Write-Output $employee.id
@@ -95,10 +89,10 @@ $no_ou_targets = foreach ($employee in $employees) {
 }
 
 if ($no_ou_targets -eq $null) {
-    Write-Output "[PASS] Every employee has an OU target" ""
+    Write-Output "[PASS] OU target presence" ""
 }
 else {
-    Write-Output "[FAIL] List of employees without an OU target: $no_ou_targets" ""
+    Write-Output "[FAIL] Employees without an OU target: $no_ou_targets" ""
     $failed_tests++
 }
 
@@ -114,10 +108,10 @@ $invalid_manager = foreach ($employee in $employees) {
 }
 
 if ($invalid_manager -eq $null) {
-    Write-Output "[PASS] Every manager reference points to an existing employee" ""
+    Write-Output "[PASS] Manager references are valid" ""
 }
 else {
-    Write-Output "[FAIL] List of employees with an invalid manager reference: $invalid_manager" ""
+    Write-Output "[FAIL] Invalid manager references: $invalid_manager" ""
     $failed_tests++
 }
 
@@ -139,10 +133,10 @@ $invalid_references = foreach ($employee in $employees) {
 }
 
 if ($invalid_references -eq $null) {
-    Write-Output "[PASS] Every employee reference is valid" ""
+    Write-Output "[PASS] Site and department references are valid" ""
 }
 else {
-    Write-Output "[FAIL] List of employees with invalid references: " $invalid_references ""
+    Write-Output "[FAIL] Invalid site/department references: $($invalid_references -join ", ")" ""
     $failed_tests++
 }
 
@@ -153,6 +147,8 @@ else {
 # STRUCTURE / TYPES
 # Does the data have the correct type
 # ========================================================================================================
+Write-Output "========== STRUCTURE / TYPES =========="
+
 $boolean_attributes= @(
     "is_manager"
     "is_it_admin"
@@ -207,10 +203,10 @@ $invalid_types = foreach ($employee in $employees) {
 }
 
 if ($invalid_types -eq $null) {
-    Write-Output "[PASS] Every attribute has the correct type" ""
+    Write-Output "[PASS] Attribute types are valid" ""
 }
 else {
-    Write-Output "[FAIL] List of attributes with a wrong type: " $invalid_types ""
+    Write-Output "[FAIL] Attributes with invalid types: $($invalid_types -join ", ")" ""
     $failed_tests++
 }
 
@@ -221,12 +217,11 @@ else {
 # JOB RULES
 # Does the data follows Novera rules ?
 # ========================================================================================================
+Write-Output "========== JOB RULES =========="
 
 # ------------------------------------------------------------
 # Manager detection
 # ------------------------------------------------------------
-Write-Output "TESTING IS_MANAGER ATTRIBUTION FOR EACH EMPLOYEE ..."
-
 $managers = $employees | Where-Object -Property job_title -in $roles.manager_job_titles
 $non_managers = $employees |  Where-Object -Property job_title -notin $roles.manager_job_titles
 
@@ -237,19 +232,17 @@ $invalid_is_manager_att = foreach ($employee in $employees) {
 }
 
 if ($invalid_is_manager_att -ne $null) {
-   Write-Output "[FAIL] List of employees without a valid is_manager attribute: $invalid_is_manager_att" ""
+   Write-Output "[FAIL] Invalid is_manager values: $invalid_is_manager_att" ""
    $failed_tests++
 }
 else {
-    Write-Output "[PASS] Every employee has a valid is_manager attribute" ""
+    Write-Output "[PASS] is_manager matches job title" ""
 }
 
 
 # ------------------------------------------------------------
 # IT admin detection
 # ------------------------------------------------------------
-Write-Output "TESTING IS_IT_ADMIN ATTRIBUTION FOR EACH EMPLOYEE ..."
-
 $it_admins = $employees | Where-Object -Property job_title -in $roles.it_admin_job_titles
 
 $invalid_is_admin_att = foreach ($employee in $employees) {
@@ -259,11 +252,11 @@ $invalid_is_admin_att = foreach ($employee in $employees) {
 }
 
 if ($invalid_is_admin_att -ne $null) {
-   Write-Output "[FAIL] List of employees without a valid is_it_admin attribute: $invalid_is_admin_att" ""
+   Write-Output "[FAIL] Invalid is_it_admin values: $invalid_is_admin_att" ""
    $failed_tests++
 }
 else {
-    Write-Output "[PASS] Every employee has a valid is_it_admin attribute" ""
+    Write-Output "[PASS] is_it_admin matches job title" ""
 }
 
 
@@ -271,8 +264,6 @@ else {
 # ------------------------------------------------------------
 # mgmt_grp and admin_grp nullability
 # ------------------------------------------------------------
-Write-Output "TESTING NULLABILITY OF MGMT_GRP AND ADMIN_GRP FOR EACH EMPLOYEE ..."
-
 $invalid_null_group = foreach($employee in $employees){
 
     # mgmt_grp attribute
@@ -293,11 +284,11 @@ $invalid_null_group = foreach($employee in $employees){
 }
 
 if ($invalid_null_group -ne $null) {
-    Write-Output "[FAIL] List of employees with invalid manager or admin values: " $invalid_null_group
+    Write-Output "[FAIL] Invalid manager/admin group values: $($invalid_null_group -join ", ")"
     $failed_tests++
 }
 else {
-    Write-Output "[PASS] Every employees has valid manager and admin values" ""
+    Write-Output "[PASS] Manager/admin group nullability" ""
 }
 
 
@@ -309,10 +300,10 @@ else {
 # DATA COHERENCE
 # Does every data tell the same story ?
 # ========================================================================================================
+Write-Output "========== DATA COHERENCE =========="
 # ------------------------------------------------------------
 # Email consistency
 # ------------------------------------------------------------
-Write-Output "TESTING EMAIL CONSISTENCY FOR EACH EMPLOYEE ..."
 $invalid_emails = foreach ($employee in $employees){
     if($employee.email -ne "$($employee.username)@novera.fr" ) {
         Write-Output "$($employee.id) - $($employee.username) - $($employee.email) | "
@@ -320,18 +311,16 @@ $invalid_emails = foreach ($employee in $employees){
 }
 
 if ($invalid_emails -eq $null) {
-       Write-Output "[PASS] Every employee has a valid email" ""
+       Write-Output "[PASS] Email matches username" ""
     }
 else {
-        Write-Output "[FAIL] List of employees without a valid email: $invalid_emails" ""
+        Write-Output "[FAIL] Emails inconsistent with usernames: $($invalid_emails -join "; ")" ""
         $failed_tests++
 }
 
 # ------------------------------------------------------------
 # Manager group consistency
 # ------------------------------------------------------------
-Write-Output "TESTING MANAGEMENT GROUP CONSISTENCY FOR EACH EMPLOYEE ..."
-
 $invalid_mgmt_grp = foreach ($employee in $employees) {
 
     $expected_mgmt_grp = "$($employee.dpt_grp)_Managers"
@@ -349,19 +338,17 @@ $invalid_mgmt_grp = foreach ($employee in $employees) {
 }
 
 if ($invalid_mgmt_grp -ne $null) {
-    Write-Output "[FAIL] List of employees without a valid mgmt_grp attribute: $invalid_mgmt_grp" ""
+    Write-Output "[FAIL] Invalid mgmt_grp values: $invalid_mgmt_grp" ""
     $failed_tests++
 }
 else {
-    Write-Output "[PASS] Every employee has a valid mgmt_grp attribute" ""
+    Write-Output "[PASS] Management group naming" ""
 }
 
 
 # ------------------------------------------------------------
 # IT Admin group consistency
 # ------------------------------------------------------------
-Write-Output "TESTING IT ADMIN GROUP CONSISTENCY FOR EACH EMPLOYEE ..."
-
 $invalid_admin_grp = foreach ($employee in $employees) {
 
     $expected_admin_grp = "$($employee.dpt_grp)_Admins"
@@ -379,18 +366,16 @@ $invalid_admin_grp = foreach ($employee in $employees) {
 }
 
 if ($invalid_admin_grp -ne $null) {
-    Write-Output "[FAIL] List of it admins without a valid admin_grp attribute: $invalid_admin_grp" ""
+    Write-Output "[FAIL] Invalid admin_grp values: $invalid_admin_grp" ""
     $failed_tests++
 }
 else {
-    Write-Output "[PASS] Every employee has a valid admin_grp attribute" ""
+    Write-Output "[PASS] IT admin group naming" ""
 }
 
 # ------------------------------------------------------------
 # Department group consistency
 # ------------------------------------------------------------
-Write-Output "TESTING DEPARTMENT GROUP CONSISTENCY FOR EACH EMPLOYEE ..."
-
 $invalid_dpt_grp = foreach ($employee in $employees) {
     if ($employee.department -eq "Cybersecurity") {
         if ($employee.dpt_grp -ne "GG_$($employee.department)") {
@@ -405,11 +390,11 @@ $invalid_dpt_grp = foreach ($employee in $employees) {
 }
 
 if ($invalid_dpt_grp -ne $null) {
-   Write-Output "[FAIL] List of employees without a valid dpt_grp attribute: $invalid_dpt_grp" ""
+   Write-Output "[FAIL] Invalid dpt_grp values: $invalid_dpt_grp" ""
    $failed_tests++
 }
 else {
-    Write-Output "[PASS] Every employee has a valid dpt_grp attribute" ""
+    Write-Output "[PASS] Department group naming" ""
 }
 
 
@@ -417,7 +402,8 @@ else {
 # ========================================================================================================
 # TESTS OVERVIEW
 # ========================================================================================================
-Write-Output "Failed test count : $failed_tests"
+Write-Output "========== TEST SUMMARY =========="
+Write-Output "Failed tests: $failed_tests"
 if ($failed_tests -gt 0){
     exit 1
 }
