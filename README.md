@@ -7,14 +7,13 @@
 - [1. Introduction](#1-introduction)
 - [2. Objectives](#2-objectives)
 - [3. Architecture Overview](#3-architecture-overview)
-- [4. Network Design](#4-network-design)
-- [5. Active Directory Design](#5-active-directory-design)
-- [6. Implemented Features](#6-implemented-features)
-- [7. Deployment Guide](#7-deployment-guide)
-- [8. Validation Results](#8-validation-results)
-- [9. Repository Structure](#9-repository-structure)
-- [10. Limitations and Future Improvements](#10-limitations-and-future-improvements)
-- [11. References](#11-references)
+- [4. Active Directory Design](#4-active-directory-design)
+- [5. Implemented Features](#5-implemented-features)
+- [6. Deployment Guide](#6-deployment-guide)
+- [7. Validation Results](#7-validation-results)
+- [8. Repository Structure](#8-repository-structure)
+- [9. Limitations and Future Improvements](#9-limitations-and-future-improvements)
+- [10. References](#10-references)
 
 <br/>  
 <br/>
@@ -77,43 +76,14 @@ The lab consists of two Active Directory sites connected through a Debian router
 
 The two domain controllers belong to the same forest and domain: `novera.fr`.
 
-![Network_diagramm.png](images/Network_diagramm.png)
-
-### Virtual Machines
-
-| Virtual machine | Role | Operating system | IP address |
-|---|---|---|---|
-| `DC01-BDX` | Domain controller and DNS | Windows Server 2025 | `10.10.10.10` |
-| `DC02-ANG` | Domain controller and DNS | Windows Server 2025 | `10.10.20.10` |
-| `RTR01` | Inter-site router | Debian 12 | See Network Design |
-| `CL01-BDX` | Domain-joined workstation | Windows 11 Pro | `10.10.10.20` |
-
-<br/>  
-<br/>
-
-## 4. Network Design
-
-### Site subnets
-
-| Site | Subnet | Default gateway | Domain controller |
-|---|---|---|---|
-| Bordeaux | `10.10.10.0/24` | `10.10.10.1` | `DC01-BDX` |
-| Angoulême | `10.10.20.0/24` | `10.10.20.1` | `DC02-ANG` |
-
-### Router interfaces
-
-| Interface | Network | IP address |
-|---|---|---|
-| `ens33` | Bordeaux | `10.10.10.1/24` |
-| `ens34` | Angoulême | `10.10.20.1/24` |
-| `ens38` | VMware NAT | `192.168.31.131/24` |
-
 The router enables IPv4 forwarding between the two site networks. Its NAT-facing interface provides external connectivity for the lab.
 
+![Network_diagramm.png](images/Network_diagramm.png)
+
 <br/>  
 <br/>
 
-## 5. Active Directory Design
+## 4. Active Directory Design
 
 **Forest and domain:** `novera.fr`  
 **NetBIOS domain name:** `NOVERA`
@@ -150,7 +120,7 @@ This OU hierarchy is a logical administrative design; it does not itself control
 <br/>  
 <br/>
 
-## 6. Implemented Features
+## 5. Implemented Features
 
 ### Active Directory Infrastructure
 
@@ -198,7 +168,7 @@ Relevant files:
 <br/>  
 <br/>
 
-## 7. Deployment and Configuration
+## 6. Deployment and Configuration
 
 The lab was deployed manually in VMware Workstation Pro, with PowerShell used for employee data import and validation.
 
@@ -253,7 +223,7 @@ The lab was deployed manually in VMware Workstation Pro, with PowerShell used fo
 <br/>  
 <br/>
 
-## 8. Validation Results
+## 7. Validation Results
 
 The core infrastructure components were validated through functional checks performed during the lab deployment. The following table summarizes the validation method and the expected evidence.
 
@@ -286,7 +256,7 @@ These results document the functional checks performed in this lab. They do not 
 <br/>  
 <br/>
 
-## 9. Repository Structure
+## 8. Repository Structure
 <details>
 <summary>View repository structure</summary>
 
@@ -328,7 +298,7 @@ These results document the functional checks performed in this lab. They do not 
 <br/>  
 <br/>
 
-## 10. Limitations and Future Improvements
+## 9. Limitations and Future Improvements
 
 ### Current Limitations
 
@@ -350,7 +320,7 @@ These results document the functional checks performed in this lab. They do not 
 <br/>  
 <br/>
 
-## 11. References
+## 10. References
 
 - [Microsoft Learn — Active Directory Domain Services](https://learn.microsoft.com/windows-server/identity/ad-ds/)
 - [Microsoft Learn — Group Policy](https://learn.microsoft.com/windows-server/identity/ad-ds/manage/group-policy/group-policy-overview)
