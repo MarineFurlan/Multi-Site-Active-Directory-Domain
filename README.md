@@ -26,6 +26,22 @@ The infrastructure is built with VMware Workstation Pro, Windows Server 2025, Wi
 
 The project focuses on Active Directory administration, multi-site replication, organizational unit design, Group Policy management, delegated administration, network connectivity, and file access permissions.
 
+### Business Scenario
+
+NOVERA is a company operating across two sites: Bordeaux and Angouleme. Each site has its own network and local IT administration requirements.
+
+The Bordeaux IT team is responsible for the day-to-day administration of its local environment, while the Angouleme IT team manages the resources at its own site.
+
+NOVERA also has a **Cybersecurity team based in Bordeaux**, responsible for protecting the corporate network as a whole. Its scope includes both Bordeaux and Angouleme, regardless of the team's physical location.
+
+This organizational model introduces two distinct administrative needs:
+
+- **Local autonomy:** IT teams must be able to perform their assigned administrative tasks within their own site's scope.
+- **Cross-site security:** the Cybersecurity function must operate across the entire corporate environment, with access and privileges explicitly defined according to its responsibilities.
+
+The Active Directory design reflects these requirements through site-specific organizational units, delegated administration, and security groups intended to represent both local and cross-site functions.
+
+The lab demonstrates how a multi-site Active Directory environment can reflect an organization's real administrative responsibilities while keeping permissions explicit and scoped to the required tasks.
 ## 2. Objectives
 
 | Professional skill | What this lab demonstrates |
