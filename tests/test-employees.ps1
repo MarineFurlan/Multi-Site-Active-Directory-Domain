@@ -9,17 +9,17 @@ $failed_tests = 0
 # DATA INTEGRITY
 # Does the data exist and is it usable ?
 # ========================================================================================================
-Write-Output "========== DATA INTEGRITY ==========" ""
+Write-Output "`n========== DATA INTEGRITY =========="
 # ------------------------------------------------------------
 # Employee count
 # ------------------------------------------------------------
 $targeted_employees_count = 98
 $employees_count = $employees.Count
 if ($targeted_employees_count -eq $employees_count) {
-    Write-Output "[PASS] Employees count: $employees_count / $targeted_employees_count"
+    Write-Output "`n[PASS] Employees count: $employees_count / $targeted_employees_count"
 }
 else {
-    Write-Output "[FAIL] Employees count: $employees_count / $targeted_employees_count"
+    Write-Output "`n[FAIL] Employees count: $employees_count / $targeted_employees_count"
     $failed_tests++
 }
 
@@ -133,10 +133,10 @@ $invalid_references = foreach ($employee in $employees) {
 }
 
 if ($invalid_references -eq $null) {
-    Write-Output "[PASS] Site and department references are valid" ""
+    Write-Output "[PASS] Site and department references are valid"
 }
 else {
-    Write-Output "[FAIL] Invalid site/department references: $($invalid_references -join ", ")" ""
+    Write-Output "[FAIL] Invalid site/department references: $($invalid_references -join ", ")"
     $failed_tests++
 }
 
@@ -147,7 +147,7 @@ else {
 # STRUCTURE / TYPES
 # Does the data have the correct type
 # ========================================================================================================
-Write-Output "========== STRUCTURE / TYPES ==========" ""
+Write-Output "`n========== STRUCTURE / TYPES =========="
 
 $boolean_attributes= @(
     "is_manager"
@@ -179,7 +179,7 @@ $invalid_types = foreach ($employee in $employees) {
 # ------------------------------------------------------------
     foreach ($boolean_attribute in $boolean_attributes){
         if ($employee.$boolean_attribute -isnot [bool]) {
-            Write-Output "Wrong $boolean_attribute value type : $($employee.id)"
+            Write-Output "`nWrong $boolean_attribute value type : $($employee.id)"
         }
     }
 
@@ -188,7 +188,7 @@ $invalid_types = foreach ($employee in $employees) {
 # ------------------------------------------------------------
     foreach ($string_attribute in $string_attributes){
         if ($employee.$string_attribute -isnot [string]) {
-            Write-Output "Wrong $string_attribute value type : $($employee.id)"
+            Write-Output "`nWrong $string_attribute value type : $($employee.id)"
         }
     }
 
@@ -197,16 +197,16 @@ $invalid_types = foreach ($employee in $employees) {
 # ------------------------------------------------------------
    foreach ($string_or_null_attribute in $string_or_null_attributes){
         if (-not (($employee.$string_or_null_attribute -is [string]) -or ($employee.$string_or_null_attribute -eq $null))) {
-            Write-Output "Wrong $string_or_null_attribute value type : $($employee.id)"
+            Write-Output "`nWrong $string_or_null_attribute value type : $($employee.id)"
         }
     }
 }
 
 if ($invalid_types -eq $null) {
-    Write-Output "[PASS] Attribute types are valid" ""
+    Write-Output "`n[PASS] Attribute types are valid"
 }
 else {
-    Write-Output "[FAIL] Attributes with invalid types: $($invalid_types -join ", ")" ""
+    Write-Output "`n[FAIL] Attributes with invalid types: $($invalid_types -join ", ")"
     $failed_tests++
 }
 
@@ -217,7 +217,7 @@ else {
 # JOB RULES
 # Does the data follows Novera rules ?
 # ========================================================================================================
-Write-Output "========== JOB RULES ==========" ""
+Write-Output "`n========== JOB RULES =========="
 
 # ------------------------------------------------------------
 # Manager detection
@@ -232,11 +232,11 @@ $invalid_is_manager_att = foreach ($employee in $employees) {
 }
 
 if ($invalid_is_manager_att -ne $null) {
-   Write-Output "[FAIL] Invalid is_manager values: $invalid_is_manager_att"
+   Write-Output "`n[FAIL] Invalid is_manager values: $invalid_is_manager_att"
    $failed_tests++
 }
 else {
-    Write-Output "[PASS] is_manager matches job title"
+    Write-Output "`n[PASS] is_manager matches job title"
 }
 
 
@@ -284,11 +284,11 @@ $invalid_null_group = foreach($employee in $employees){
 }
 
 if ($invalid_null_group -ne $null) {
-    Write-Output "[FAIL] Invalid manager/admin group values: $($invalid_null_group -join ", ")" ""
+    Write-Output "[FAIL] Invalid manager/admin group values: $($invalid_null_group -join ", ")"
     $failed_tests++
 }
 else {
-    Write-Output "[PASS] Manager/admin group nullability" ""
+    Write-Output "[PASS] Manager/admin group nullability"
 }
 
 
@@ -300,21 +300,21 @@ else {
 # DATA COHERENCE
 # Does every data tell the same story ?
 # ========================================================================================================
-Write-Output "========== DATA COHERENCE ==========" ""
+Write-Output "`n========== DATA COHERENCE =========="
 # ------------------------------------------------------------
 # Email consistency
 # ------------------------------------------------------------
 $invalid_emails = foreach ($employee in $employees){
     if($employee.email -ne "$($employee.username)@novera.fr" ) {
-        Write-Output "$($employee.id) - $($employee.username) - $($employee.email) | "
+        Write-Output "`n$($employee.id) - $($employee.username) - $($employee.email) | "
     }
 }
 
 if ($invalid_emails -eq $null) {
-       Write-Output "[PASS] Email matches username"
+       Write-Output "`n[PASS] Email matches username"
     }
 else {
-        Write-Output "[FAIL] Emails inconsistent with usernames: $($invalid_emails -join "; ")"
+        Write-Output "`n[FAIL] Emails inconsistent with usernames: $($invalid_emails -join "; ")"
         $failed_tests++
 }
 
@@ -390,11 +390,11 @@ $invalid_dpt_grp = foreach ($employee in $employees) {
 }
 
 if ($invalid_dpt_grp -ne $null) {
-   Write-Output "[FAIL] Invalid dpt_grp values: $invalid_dpt_grp" ""
+   Write-Output "[FAIL] Invalid dpt_grp values: $invalid_dpt_grp"
    $failed_tests++
 }
 else {
-    Write-Output "[PASS] Department group naming" ""
+    Write-Output "[PASS] Department group naming"
 }
 
 
@@ -402,8 +402,8 @@ else {
 # ========================================================================================================
 # TESTS OVERVIEW
 # ========================================================================================================
-Write-Output "========== TEST SUMMARY ==========" ""
-Write-Output "Failed tests: $failed_tests"
+Write-Output "`n========== TEST SUMMARY =========="
+Write-Output "`nFailed tests: $failed_tests"
 if ($failed_tests -gt 0){
     exit 1
 }

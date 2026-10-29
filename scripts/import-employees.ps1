@@ -221,12 +221,14 @@ Import-Module ActiveDirectory -ErrorAction Stop
 
 $targetOUs = $employees | Select-Object -ExpandProperty ou_dn -Unique
 
+Write-Host "`n========== ACTIVE DIRECTORY IMPORT ==========" ""
+Write-Host "`n[1/3] Checking target OUs..."
+
 foreach ($ou in $targetOUs) {
     $null = Get-ADOrganizationalUnit -Identity $ou -ErrorAction Stop
-    Write-Host "OU OK : $ou" -ForegroundColor Green
 }
 
-
+Write-Host "[PASS] Target OUs verified: $($targetOUs.Count)" ""
 
 # ------------------------------------------------------------
 # Add new user if it has not already been created
@@ -265,12 +267,15 @@ foreach ($employee in $employees) {
     }
 }
 
-Write-Output "$($skippedUsers.count) already have an AD account"
-Write-Output "List of skipped account : $($skippedUsers -join ', ')" ""
-Write-Output "$($createdUsers.count) accounts have been created"
-Write-Output "List of created account : $($createdUsers -join ', ')" ""
-Write-Output "$($failedUsers.count) accounts creation failed"
-Write-Output "List of failed account : $($failedUsers -join ', ')" ""
+Write-Host "`n[2/3] User account creation"
+Write-Host "[INFO] Created: $($createdUsers.Count) | Already existed: $($skippedUsers.Count) | Failed: $($failedUsers.Count)"
+
+if ($failedUsers.Count -gt 0) {
+    Write-Host "[FAIL] Accounts not created: $($failedUsers -join ', ')" ""
+}
+else {
+    Write-Host "[PASS] No account creation errors" ""
+}
 
 # ------------------------------------------------------------
 # Add user to groups
@@ -280,6 +285,8 @@ Write-Output "List of failed account : $($failedUsers -join ', ')" ""
 $failedDptGroupAdd = [System.Collections.Generic.List[string]]::new()
 $failedMgmtGroupAdd = [System.Collections.Generic.List[string]]::new()
 $failedAdminGroupAdd = [System.Collections.Generic.List[string]]::new()
+
+Write-Host "`n[3/3] Adding users to groups..."
 
 foreach ($employee in $employees) {
 
@@ -333,9 +340,10 @@ foreach ($employee in $employees) {
     }
 }
 
-Write-Output "$($failedDptGroupAdd.count) account couldn't have been added to dpt group"
-Write-Output "List of accounts with failed dpt_grp addition : $($failedDptGroupAdd -join ', ')" ""
-Write-Output "$($failedMgmtGroupAdd.count) account couldn't have been added to mgmt group"
-Write-Output "List of accounts with failed mgmt_grp addition : $($failedMgmtGroupAdd -join ', ')" ""
-Write-Output "$($failedAdminGroupAdd.count) account couldn't have been added to admin group"
-Write-Output "List of accounts with failed admin_grp addition : $($failedAdminGroupAdd -join ', ')" ""
+Write-Host "`n========== IMPORT SUMMARY =========="
+Write-Host "Accounts created       : $($createdUsers.Count)"
+Write-Host "Accounts already exist : $($skippedUsers.Count)"
+Write-Host "Account creation errors: $($failedUsers.Count)"
+Write-Host "Department group errors: $($failedDptGroupAdd.Count)"
+Write-Host "Manager group errors   : $($failedMgmtGroupAdd.Count)"
+Write-Host "Admin group errors     : $($failedAdminGroupAdd.Count)" ""
