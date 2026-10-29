@@ -195,8 +195,6 @@ The lab was deployed manually in VMware Workstation Pro, with PowerShell used fo
 - Validate user creation, description modification, and password reset with a delegated account.
 - Verify that the delegated account cannot reset passwords outside its intended administrative scope.
 
-**Note:** The predefined *Create, delete, and manage user accounts* delegation includes account deletion rights. Review the scope carefully before using this configuration outside the lab.
-
 </details>
 
 <details>
@@ -206,8 +204,6 @@ The lab was deployed manually in VMware Workstation Pro, with PowerShell used fo
 - Grant `GG_Bordeaux_IT` Modify permissions at the SMB share and NTFS levels.
 - Grant `Administrateurs` Full Control at the SMB share level.
 - Test file creation with an authorized IT account and verify access denial for a non-IT account.
-
-**Note:** Inherited NTFS permissions were retained. The share is hosted on a domain controller for lab purposes; a dedicated file server is preferable in production.
 
 </details>
 
