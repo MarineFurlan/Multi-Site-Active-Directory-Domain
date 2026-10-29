@@ -233,22 +233,33 @@ The lab was deployed manually in VMware Workstation Pro, with PowerShell used fo
 
 ## 8. Validation Results
 
-The lab's core features have been validated through functional tests.
+The core infrastructure components were validated through functional checks performed during the lab deployment. The following table summarizes the validation method and the expected evidence.
 
-| Component | Validation performed | Result |
+| Component | Validation procedure | Expected evidence |
 |---|---|---|
-| Domain membership | Joined `CL01-BDX` to `novera.fr` | Successful |
-| Inter-site networking | Tested connectivity between the Bordeaux and Angoulême subnets | Successful |
-| AD replication | Checked replication using `repadmin`; the summary eventually returned no errors after allowing synchronization to complete | Successful |
-| Workstation Group Policy | Tested the configured inactivity lock policy | Successful |
-| Account lockout policy | Tested account lockout using a temporary test account | Successful |
-| Delegated administration | Tested user creation, description modification, and password reset | Successful |
-| SMB share access | Confirmed file creation by an authorized IT user and access denial for a non-IT user | Successful |
-| Employee import | PowerShell import script and corresponding test file are present in the repository | Implementation present; test status to be documented separately |
+| Domain membership | On `CL01-BDX`, run `whoami` and `systeminfo` to check the logged-in domain account and computer domain membership. | The workstation belongs to `novera.fr`, and the logged-in account uses the domain identity when applicable. |
+| Inter-site networking | Run `ping 10.10.20.10` from the Bordeaux network to check connectivity to `DC02-ANG`. Use `nslookup DC02-ANG.novera.fr` to validate DNS name resolution. | The remote domain controller is reachable, and its hostname resolves to `10.10.20.10`. |
+| Active Directory replication | On a domain controller, run `repadmin /replsummary`. | The replication summary reports no replication errors after synchronization has completed. |
+| Workstation Group Policy | Run `gpresult /r /scope computer` on `CL01-BDX` to inspect applied computer policies. Check the configured inactivity-lock setting and verify that the workstation locks after 15 minutes of inactivity. | The relevant computer policy is applied, and the inactivity lock behaves as configured. |
+| Domain account lockout policy | On a domain controller, run `Get-ADDefaultDomainPasswordPolicy`. In the lab, a temporary test account was used to verify lockout after five incorrect password attempts. | The domain policy shows the configured threshold and lockout duration; the test account locks after the configured number of failed attempts. |
+| Delegated administration | Sign in to `CL01-BDX` with the delegated Bordeaux IT account. Create a test user under the authorized Bordeaux OU, modify its description, and reset its password. Attempting a password reset outside the delegated scope should be denied. | Authorized operations succeed within the tested scope, while the tested operation outside that scope is denied. |
+| SMB share access | Access `\\DC01-BDX\IT-Bordeaux` using an authorized member of `GG_Bordeaux_IT`, then create a test file. Repeat the access check with a non-IT account. | The authorized IT user can create a file; the tested non-IT account is denied access. |
+| Employee import | Review `scripts/import-employees.ps1` and `tests/test-employees.ps1`. Run the test script in the intended lab environment when validating the import process. | The script and test file are present in the repository. Test execution results must be recorded separately before claiming that the import tests pass. |
 
-![Server_replication_results.png](images/Server_replication_results.png)
+### Relevant Files and Evidence
 
-These results reflect the tests performed during the lab. They do not constitute a complete production-readiness or disaster-recovery assessment.
+The following screenshots provide visual evidence of selected configuration and validation steps.
+
+- **Active Directory replication:** [`Server_replication_results.png`](docs/images/Server_replication_results.png)
+- **Active Directory sites and site link:** [`Sites_structure.png`](docs/images/Sites_structure.png)
+- **Organizational unit hierarchy:** [`OU_structure.png`](docs/images/OU_structure.png)
+- **Group Policy configuration:** [`GPO_strategies.png`](docs/images/GPO_strategies.png)
+- **Delegated administration:** [`Group_delegation_ITAdmins.png`](docs/images/Group_delegation_ITAdmins.png)
+- **SMB and NTFS permissions:** [`ITFolder_permissions.png`](docs/images/ITFolder_permissions.png)
+- **Network access validation:** [`Network_access_validation.png`](docs/images/Network_access_validation.png)
+- **DNS configuration:** [`DNS_manager.png`](docs/images/DNS_manager.png)
+
+These results document the functional checks performed in this lab. They do not constitute a complete production-readiness, security-audit, or disaster-recovery assessment.
 
 ## 9. Repository Structure
 <details>
