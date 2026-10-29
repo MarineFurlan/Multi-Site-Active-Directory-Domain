@@ -16,6 +16,9 @@
 - [10. Limitations and Future Improvements](#10-limitations-and-future-improvements)
 - [11. References](#11-references)
 
+<br/>  
+<br/>
+
 ## 1. Introduction
 
 This project documents the deployment and configuration of a multi-site Active Directory Domain Services (AD DS) infrastructure in a virtualized environment.
@@ -42,6 +45,10 @@ This organizational model introduces two distinct administrative needs:
 The Active Directory design reflects these requirements through site-specific organizational units, delegated administration, and security groups intended to represent both local and cross-site functions.
 
 The lab demonstrates how a multi-site Active Directory environment can reflect an organization's real administrative responsibilities while keeping permissions explicit and scoped to the required tasks.
+
+<br/>  
+<br/>
+
 ## 2. Objectives
 
 | Professional skill | What this lab demonstrates |
@@ -56,6 +63,9 @@ The lab demonstrates how a multi-site Active Directory environment can reflect a
 | Network administration | Inter-site routing using a Debian router |
 
 Cloud identity synchronization and broader infrastructure automation are potential future improvements, not completed objectives.
+
+<br/>  
+<br/>
 
 ## 3. Architecture Overview
 
@@ -78,6 +88,9 @@ The two domain controllers belong to the same forest and domain: `novera.fr`.
 | `RTR01` | Inter-site router | Debian 12 | See Network Design |
 | `CL01-BDX` | Domain-joined workstation | Windows 11 Pro | `10.10.10.20` |
 
+<br/>  
+<br/>
+
 ## 4. Network Design
 
 ### Site subnets
@@ -96,6 +109,9 @@ The two domain controllers belong to the same forest and domain: `novera.fr`.
 | `ens38` | VMware NAT | `192.168.31.131/24` |
 
 The router enables IPv4 forwarding between the two site networks. Its NAT-facing interface provides external connectivity for the lab.
+
+<br/>  
+<br/>
 
 ## 5. Active Directory Design
 
@@ -130,6 +146,9 @@ A site-first hierarchy was chosen because the lab focuses on a multi-site organi
 An alternative would be to organize all users and computers primarily by department, regardless of location. That approach can be appropriate when departments are the main administrative boundary. For this lab, however, location was selected as the first organizational dimension because site-based administration and delegation are key objectives.
 
 This OU hierarchy is a logical administrative design; it does not itself control network routing or Active Directory replication. Those functions are handled by the network configuration and Active Directory Sites and Services, respectively.
+
+<br/>  
+<br/>
 
 ## 6. Implemented Features
 
@@ -176,6 +195,8 @@ Relevant files:
 - `Administrateurs` granted Full Control at the SMB share level.
 - Access tested with an authorized IT user and a non-IT user.
 
+<br/>  
+<br/>
 
 ## 7. Deployment and Configuration
 
@@ -229,7 +250,8 @@ The lab was deployed manually in VMware Workstation Pro, with PowerShell used fo
 
 </details>
 
-
+<br/>  
+<br/>
 
 ## 8. Validation Results
 
@@ -260,6 +282,9 @@ The following screenshots provide visual evidence of selected configuration and 
 - **DNS configuration:** [`DNS_manager.png`](docs/images/DNS_manager.png)
 
 These results document the functional checks performed in this lab. They do not constitute a complete production-readiness, security-audit, or disaster-recovery assessment.
+
+<br/>  
+<br/>
 
 ## 9. Repository Structure
 <details>
@@ -300,6 +325,9 @@ These results document the functional checks performed in this lab. They do not 
 | `tests/` | Tests for employee import functionality |
 | `README.md` | Project overview, architecture, deployment scope, and validation results |
 
+<br/>  
+<br/>
+
 ## 10. Limitations and Future Improvements
 
 ### Current Limitations
@@ -319,6 +347,9 @@ These results document the functional checks performed in this lab. They do not 
 - Implement and test backup and recovery procedures.
 - Explore Microsoft Entra ID integration and directory synchronization as a separate project phase.
 
+<br/>  
+<br/>
+
 ## 11. References
 
 - [Microsoft Learn — Active Directory Domain Services](https://learn.microsoft.com/windows-server/identity/ad-ds/)
@@ -326,3 +357,12 @@ These results document the functional checks performed in this lab. They do not 
 - [Microsoft Learn — Active Directory replication](https://learn.microsoft.com/windows-server/identity/ad-ds/get-started/replication/active-directory-replication-concepts)
 - [Debian Documentation](https://www.debian.org/doc/)
 - [VMware Workstation Pro](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion)
+
+<br/>
+<br/> 
+
+
+## Author
+**Furlan Marine - Certified AWS Solutions Architect - Associate** \
+📌https://www.linkedin.com/in/marinefurlan/ \
+🎓https://www.credly.com/badges/06426b31-106e-4251-b866-6da8f4200e68/linked_in?t=t7j3hl
