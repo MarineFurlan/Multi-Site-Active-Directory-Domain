@@ -86,16 +86,34 @@ The router enables IPv4 forwarding between the two site networks. Its NAT-facing
 **Forest and domain:** `novera.fr`  
 **NetBIOS domain name:** `NOVERA`
 
-Active Directory Sites and Services contains two sites:
+### Site Topology
+
+The lab uses a single Active Directory forest and domain across two geographical sites:
 
 - `Bordeaux`, associated with subnet `10.10.10.0/24`.
 - `Angouleme`, associated with subnet `10.10.20.0/24`.
 
-The sites are connected through the `BDX-ANG` site link.
+The sites are connected through the `BDX-ANG` site link. Active Directory Sites and Services represents the physical network topology and supports site-aware domain controller discovery and replication.
 
-The organizational unit structure separates resources by location. Each site contains OUs for users, computers, servers, and groups. User OUs are further organized by department.
+### Organizational Unit Design
 
-This design supports location-based administration and delegation while keeping security groups responsible for access control.
+The OU hierarchy follows a **site-first approach**, with resources separated by object type and user accounts further organized by department.
+
+The structure is designed around the following principles:
+
+- **Location-based administration:** separating Bordeaux and Angouleme provides clear administrative boundaries between the two locations.
+- **Delegation scope:** site-specific OU branches make it easier to delegate administrative tasks to local IT teams without intentionally granting them the same scope across the entire domain.
+- **Object separation:** dedicated OUs for users, computers, servers, and groups provide a clearer structure for administration and targeted Group Policy application.
+- **Departmental organization:** user OUs are subdivided by department to make user management and the application of department-specific policies easier when required.
+- **Separation of administration and access control:** OUs organize objects and define potential delegation and Group Policy scopes, while security groups are used to assign permissions to resources.
+
+### Rationale and Trade-offs
+
+A site-first hierarchy was chosen because the lab focuses on a multi-site organization in which administrative responsibilities may differ by location. It also provides a practical structure for testing delegated administration within a defined OU boundary.
+
+An alternative would be to organize all users and computers primarily by department, regardless of location. That approach can be appropriate when departments are the main administrative boundary. For this lab, however, location was selected as the first organizational dimension because site-based administration and delegation are key objectives.
+
+This OU hierarchy is a logical administrative design; it does not itself control network routing or Active Directory replication. Those functions are handled by the network configuration and Active Directory Sites and Services, respectively.
 
 ## 6. Implemented Features
 
