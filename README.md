@@ -225,9 +225,9 @@ The lab was deployed manually in VMware Workstation Pro, with PowerShell used fo
 
 The core infrastructure components were validated through functional checks performed during the lab deployment. The following table summarizes the validation method and the expected evidence.
 
-| Component | Validation procedure | Expected evidence |
-|---|---|---|
-| Domain membership | On `CL01-BDX`, run `whoami` and `systeminfo` to check the logged-in domain account and computer domain membership. | The workstation belongs to `novera.fr`, and the logged-in account uses the domain identity when applicable. |
+| Component | Validation procedure | Expected evidence | Screenshot |
+|---|---|---|---|
+| Domain membership | On `CL01-BDX`, run `whoami` and `systeminfo` to check the logged-in domain account and computer domain membership. | The workstation belongs to `novera.fr`, and the logged-in account uses the domain identity when applicable. | [`Domain_membership.png`](images/Domain_membership.png)
 | Inter-site networking | Run `ping 10.10.20.10` from the Bordeaux network to check connectivity to `DC02-ANG`. Use `nslookup DC02-ANG.novera.fr` to validate DNS name resolution. | The remote domain controller is reachable, and its hostname resolves to `10.10.20.10`. |
 | Active Directory replication | On a domain controller, run `repadmin /replsummary`. | The replication summary reports no replication errors after synchronization has completed. |
 | Workstation Group Policy | Run `gpresult /r /scope computer` on `CL01-BDX` to inspect applied computer policies. Check the configured inactivity-lock setting and verify that the workstation locks after 15 minutes of inactivity. | The relevant computer policy is applied, and the inactivity lock behaves as configured. |
