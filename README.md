@@ -240,14 +240,14 @@ The core infrastructure components were validated through functional checks perf
 
 The following screenshots provide visual evidence of selected configuration and validation steps.
 
-- **Active Directory replication:** [`Server_replication_results.png`](docs/images/Server_replication_results.png)
-- **Active Directory sites and site link:** [`Sites_structure.png`](docs/images/Sites_structure.png)
-- **Organizational unit hierarchy:** [`OU_structure.png`](docs/images/OU_structure.png)
-- **Group Policy configuration:** [`GPO_strategies.png`](docs/images/GPO_strategies.png)
-- **Delegated administration:** [`Group_delegation_ITAdmins.png`](docs/images/Group_delegation_ITAdmins.png)
-- **SMB and NTFS permissions:** [`ITFolder_permissions.png`](docs/images/ITFolder_permissions.png)
-- **Network access validation:** [`Network_access_validation.png`](docs/images/Network_access_validation.png)
-- **DNS configuration:** [`DNS_manager.png`](docs/images/DNS_manager.png)
+- **Active Directory replication:** [`Server_replication_results.png`](images/Server_replication_results.png)
+- **Active Directory sites and site link:** [`Sites_structure.png`](images/Sites_structure.png)
+- **Organizational unit hierarchy:** [`OU_structure.png`](images/OU_structure.png)
+- **Group Policy configuration:** [`GPO_strategies.png`](images/GPO_strategies.png)
+- **Delegated administration:** [`Group_delegation_ITAdmins.png`](images/Group_delegation_ITAdmins.png)
+- **SMB and NTFS permissions:** [`ITFolder_permissions.png`](images/ITFolder_permissions.png)
+- **Network access validation:** [`Network_access_validation.png`](images/Network_access_validation.png)
+- **DNS configuration:** [`DNS_manager.png`](images/DNS_manager.png)
 
 These results document the functional checks performed in this lab. They do not constitute a complete production-readiness, security-audit, or disaster-recovery assessment.
 
