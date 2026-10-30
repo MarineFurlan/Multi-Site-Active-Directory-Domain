@@ -163,38 +163,49 @@ Relevant files:
 
 ## 6. Deployment and Configuration
 
-The lab was deployed manually in VMware Workstation Pro, with PowerShell used for employee data import and validation.
+The infrastructure was deployed manually in VMware Workstation Pro. PowerShell automation was used to provision employee accounts and security groups.
 
 <details>
 <summary><strong>Infrastructure deployment</strong></summary>
 
 1. Create the VMware networks for Bordeaux (`10.10.10.0/24`), Angoulême (`10.10.20.0/24`), and NAT connectivity.
 2. Deploy the Debian 12 router and configure its three network interfaces and IPv4 forwarding.
-3. Install Windows Server 2025 on both domain controllers and assign static IP addresses.
-4. Promote `DC01-BDX` to create the `novera.fr` forest, then join `DC02-ANG` as an additional domain controller.
-5. Configure DNS, Active Directory sites, subnets, and the `BDX-ANG` site link.
-6. Create the site-based OU structure, security groups, and employee accounts.
-7. Join `CL01-BDX` to the domain and configure Group Policies.
+3. Install Windows Server 2025 on `DC01-BDX`, assign a static IP address, and promote it to create the `novera.fr` forest.
+4. Configure DNS and create the Active Directory sites, subnet associations, and `BDX-ANG` site link.
+5. Install Windows Server 2025 on `DC02-ANG`, assign a static IP address, configure its DNS settings, and promote it as an additional domain controller.
+6. Create the site-based OU hierarchy.
+7. Verify initial Active Directory replication between both domain controllers.
+8. Join `CL01-BDX` to the domain and configure the required Group Policies.
+
+</details>
+
+<details>
+<summary><strong>Automated directory provisioning</strong></summary>
+
+- Prepare employee and reference data in the `data/` directory.
+- Run `scripts/import-employees.ps1` to provision employee accounts and associated security groups.
+- Verify that newly created directory objects are replicated between both domain controllers.
 
 </details>
 
 <details>
 <summary><strong>Delegated administration</strong></summary>
 
-- Create the `GG_Bordeaux_IT_Admins` security group.
-- Delegate user-account management within `Bordeaux\Users`.
-- Validate user creation, description modification, and password reset with a delegated account.
-- Verify that the delegated account cannot reset passwords outside its intended administrative scope.
+- Delegate user-account management permissions to `GG_Bordeaux_IT_Admins` within `Bordeaux\Users`.
+- Delegate user password reset permissions to `GG_Cybersecurity` within both `Bordeaux\Users` and `Angouleme\Users`.
+- Validate user creation, description modification, and password reset using a delegated Bordeaux IT account.
+- Validate cross-site password resets using a dedicated Cybersecurity account.
+- Verify that operations outside each group's delegated scope are denied.
 
 </details>
 
 <details>
 <summary><strong>Network share configuration</strong></summary>
 
-- Create `C:\Shares\IT-Bordeaux` on `DC01-BDX` and publish it as `\\DC01-BDX\IT-Bordeaux`.
+- Create `C:\Shares\IT-Bordeaux` on `DC01-BDX`.
+- Publish the folder as `\\DC01-BDX\IT-Bordeaux`.
 - Grant `GG_Bordeaux_IT` Modify permissions at the SMB share and NTFS levels.
 - Grant `Administrateurs` Full Control at the SMB share level.
-- Test file creation with an authorized IT account and verify access denial for a non-IT account.
 
 </details>
 
@@ -203,12 +214,12 @@ The lab was deployed manually in VMware Workstation Pro, with PowerShell used fo
 
 - Check domain membership and inter-site connectivity.
 - Verify AD replication using `repadmin /replsummary`.
-- Test the workstation inactivity lock and domain account lockout policies.
-- Validate delegated administration and SMB share access.
-- Run the employee import validation script when its test status needs to be confirmed.
+- Test workstation inactivity lock and domain account lockout policies.
+- Validate local and cross-site delegated administration.
+- Verify authorized and unauthorized SMB share access.
+- Run `tests/test-employees.ps1` to validate the employee import process.
 
 </details>
-
 <br/>  
 <br/>
 
