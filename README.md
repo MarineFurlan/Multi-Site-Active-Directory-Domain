@@ -9,7 +9,7 @@
 - [3. Architecture Overview](#3-architecture-overview)
 - [4. Active Directory Design](#4-active-directory-design)
 - [5. Implemented Features](#5-implemented-features)
-- [6. Deployment Guide](#6-deployment-guide)
+- [6. Deployment and Configuration](#6-deployment-and-configuration)
 - [7. Validation Results](#7-validation-results)
 - [8. Repository Structure](#8-repository-structure)
 - [9. Limitations and Future Improvements](#9-limitations-and-future-improvements)
