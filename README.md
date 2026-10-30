@@ -324,12 +324,13 @@ These results document the functional checks performed in this lab. They do not 
 
 ## 10. References
 
-- [Microsoft Learn — Active Directory Domain Services](https://learn.microsoft.com/windows-server/identity/ad-ds/)
-- [Microsoft Learn — Group Policy](https://learn.microsoft.com/windows-server/identity/ad-ds/manage/group-policy/group-policy-overview)
-- [Microsoft Learn — Active Directory replication](https://learn.microsoft.com/windows-server/identity/ad-ds/get-started/replication/active-directory-replication-concepts)
-- [Debian Documentation](https://www.debian.org/doc/)
-- [VMware Workstation Pro](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion)
-
+- [Microsoft Learn - Install Active Directory Domain Services](https://learn.microsoft.com/windows-server/identity/ad-ds/deploy/install-active-directory-domain-services--level-100-)
+- [Microsoft Learn - Designing the Site Topology](https://learn.microsoft.com/windows-server/identity/ad-ds/plan/designing-the-site-topology)
+- [Microsoft Learn - Group Policy](https://learn.microsoft.com/windows-server/identity/ad-ds/manage/group-policy/group-policy-overview)
+- [Microsoft Learn - Delegating Administration by Using OU Objects](https://learn.microsoft.com/windows-server/identity/ad-ds/plan/delegating-administration-by-using-ou-objects)
+- [Microsoft Learn - Active Directory replication](https://learn.microsoft.com/windows-server/identity/ad-ds/get-started/replication/active-directory-replication-concepts)
+- [Microsoft Learn - Share and NTFS Permissions](https://learn.microsoft.com/iis/web-hosting/configuring-servers-in-the-windows-web-platform/configuring-share-and-ntfs-permissions)
+- [Microsoft Learn - New-ADGroup](https://learn.microsoft.com/powershell/module/activedirectory/new-adgroup?view=windowsserver2025-ps)
 <br/>
 <br/> 
 
