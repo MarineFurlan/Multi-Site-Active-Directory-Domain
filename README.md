@@ -249,7 +249,24 @@ These results document the functional checks performed in this lab. They do not 
 ├── images/
 │   └── Account_lockedout.png
 │   └── AD_replication.png
-│   └── [...]
+│   └── Cybersecurity_ANG.png
+│   └── Cybersecurity_BDX.png
+│   └── Cybersecurity_denied.png
+│   └── Delegated_administration_ANG.png
+│   └── Delegated_administration_BDX.png
+│   └── Delegated_administration_GRP.png
+│   └── Domain_account_lockout_policy.png
+│   └── Domain_membership.png
+│   └── Employee_import_FAIL.png
+│   └── Employee_import_SUCCESS.png
+│   └── GPO_strategies.png
+│   └── Intersite_networking.png
+│   └── Network_diagramm.png
+│   └── OU_structure.png
+│   └── Sites_structure.png
+│   └── SMB_share_access_GRP.png
+│   └── SMB_share_access_IT.png
+│   └── SMB_share_access_NonIT.png
 │   └── Workstation_GroupPolicy.png
 ├── scripts/
 │   └── import-employees.ps1
