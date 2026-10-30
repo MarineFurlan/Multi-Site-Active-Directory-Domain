@@ -292,7 +292,7 @@ These results document the functional checks performed in this lab. They do not 
 | Path        | Purpose                                                                  |
 |-------------|--------------------------------------------------------------------------|
 | `data/`     | Employee data and reference data used by the import process              |
-| `images/`   | Screenshots used as evidence demonstration                               |
+| `images/`   | Screenshots used as demonstration evidence                               |
 | `scripts/`  | PowerShell scripts used to automate administrative tasks                 |
 | `tests/`    | Tests for employee import functionality                                  |
 | `README.md` | Project overview, architecture, deployment scope, and validation results |
