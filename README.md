@@ -22,30 +22,15 @@
 
 This project documents the deployment and configuration of a multi-site Active Directory Domain Services (AD DS) infrastructure in a virtualized environment.
 
-The lab simulates a company operating across two French locations: Bordeaux and Angoulême. Each site has its own subnet and domain controller, while both locations belong to the same Active Directory forest.
+The lab simulates NOVERA, a company operating across two French locations: Bordeaux and Angoulême. Its organizational model includes local IT administration teams and a Cybersecurity team responsible for protecting the corporate environment as a whole.
+
+The project explores how Active Directory can support these organizational requirements through directory design, delegated administration, security policies, and PowerShell automation.
 
 The infrastructure is built with :
 - VMware Workstation Pro
 - Windows Server 2025
 - Windows 11 Pro
 - Debian 12 router
-
-### Business Scenario
-
-NOVERA is a company operating across two sites: Bordeaux and Angouleme. Each site has its own network and local IT administration requirements.
-
-The Bordeaux IT team is responsible for the day-to-day administration of its local environment, while the Angouleme IT team manages the resources at its own site.
-
-NOVERA also has a **Cybersecurity team based in Bordeaux**, responsible for protecting the corporate network as a whole. Its scope includes both Bordeaux and Angouleme, regardless of the team's physical location.
-
-This organizational model introduces two distinct administrative needs:
-
-- **Local autonomy:** IT teams must be able to perform their assigned administrative tasks within their own site's scope.
-- **Cross-site security:** the Cybersecurity function must operate across the entire corporate environment, with access and privileges explicitly defined according to its responsibilities.
-
-The Active Directory design reflects these requirements through site-specific organizational units, delegated administration, and security groups intended to represent both local and cross-site functions.
-
-The lab demonstrates how a multi-site Active Directory environment can reflect an organization's real administrative responsibilities while keeping permissions explicit and scoped to the required tasks.
 
 <br/>  
 <br/>
@@ -63,8 +48,6 @@ The lab demonstrates how a multi-site Active Directory environment can reflect a
 | PowerShell automation | Scripted employee import and associated test files |
 | Network administration | Inter-site routing using a Debian router |
 
-Cloud identity synchronization and broader infrastructure automation are potential future improvements, not completed objectives.
-
 <br/>  
 <br/>
 
@@ -74,11 +57,9 @@ The lab consists of two Active Directory sites connected through a Debian router
 
 - **Bordeaux:** primary lab site, including the first domain controller and a Windows client.
 - **Angoulême:** second site, including the second domain controller.
-- **Routing:** Debian 12 router connecting both site subnets and providing external connectivity for the lab.
+- **Debian router:** connects both site networks through IPv4 forwarding and provides external connectivity through its NAT-facing interface.
 
 The two domain controllers belong to the same forest and domain: `novera.fr`.
-
-The router enables IPv4 forwarding between the two site networks. Its NAT-facing interface provides external connectivity for the lab.
 
 ![Network_diagramm.png](images/Network_diagramm.png)
 
@@ -92,32 +73,37 @@ The router enables IPv4 forwarding between the two site networks. Its NAT-facing
 
 ### Site Topology
 
-The lab uses a single Active Directory forest and domain across two geographical sites:
+Active Directory Sites and Services is configured to represent the network topology described in Section 3.
 
-- `Bordeaux`, associated with subnet `10.10.10.0/24`.
-- `Angouleme`, associated with subnet `10.10.20.0/24`.
+Two AD sites are defined:
+- `Bordeaux`
+- `Angouleme`
 
-The sites are connected through the `BDX-ANG` site link. Active Directory Sites and Services represents the physical network topology and supports site-aware domain controller discovery and replication.
+Each AD site is associated with its corresponding network subnet. The sites are connected through the `BDX-ANG` site link.
+
+This configuration supports site-aware domain controller discovery and inter-site replication.
 
 ### Organizational Unit Design
 
 The OU hierarchy follows a **site-first approach**, with resources separated by object type and user accounts further organized by department.
 
-The structure is designed around the following principles:
+The design follows four main principles:
 
-- **Location-based administration:** separating Bordeaux and Angouleme provides clear administrative boundaries between the two locations.
-- **Delegation scope:** site-specific OU branches make it easier to delegate administrative tasks to local IT teams without intentionally granting them the same scope across the entire domain.
-- **Object separation:** dedicated OUs for users, computers, servers, and groups provide a clearer structure for administration and targeted Group Policy application.
-- **Departmental organization:** user OUs are subdivided by department to make user management and the application of department-specific policies easier when required.
-- **Separation of administration and access control:** OUs organize objects and define potential delegation and Group Policy scopes, while security groups are used to assign permissions to resources.
+- **Administrative boundaries:** Separate site branches provide distinct scopes for local IT administration.
+
+- **Object separation:** Dedicated OUs for users, computers, servers, and groups facilitate administration and targeted Group Policy application.
+
+- **Departmental organization:** User OUs are subdivided by department to support structured user management and potential department-specific policies.
+
+- **Separation of administration and access control:** OUs organize directory objects and define potential delegation and Group Policy scopes, while security groups are used to assign permissions to resources.
 
 ### Rationale and Trade-offs
 
-A site-first hierarchy was chosen because the lab focuses on a multi-site organization in which administrative responsibilities may differ by location. It also provides a practical structure for testing delegated administration within a defined OU boundary.
+A site-first hierarchy was selected because location-based administration is a central requirement of the NOVERA scenario. It provides clearly defined OU boundaries for testing delegated administration without granting local IT teams unrestricted domain-wide privileges.
 
-An alternative would be to organize all users and computers primarily by department, regardless of location. That approach can be appropriate when departments are the main administrative boundary. For this lab, however, location was selected as the first organizational dimension because site-based administration and delegation are key objectives.
+An alternative would be to organize users and computers primarily by department, regardless of location. This approach can be appropriate when departmental administration is the primary organizational requirement.
 
-This OU hierarchy is a logical administrative design; it does not itself control network routing or Active Directory replication. Those functions are handled by the network configuration and Active Directory Sites and Services, respectively.
+The distinction between physical and logical organization is important: AD Sites and Services represents network topology and supports replication, whereas OUs organize directory objects and provide administrative and Group Policy scopes. OU placement does not control network routing or replication.
 
 <br/>  
 <br/>
@@ -223,18 +209,21 @@ The lab was deployed manually in VMware Workstation Pro, with PowerShell used fo
 
 ## 7. Validation Results
 
-The core infrastructure components were validated through functional checks performed during the lab deployment. The following table summarizes the validation method and the expected evidence.
+The infrastructure and implemented features were validated through functional checks.
 
-| Component | Validation procedure | Expected evidence | Screenshots                                                                                                                                                                                                                               |
-|---|---|---|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Domain membership | On `CL01-BDX`, run `whoami` and `systeminfo` to check the logged-in domain account and computer domain membership. | The workstation belongs to `novera.fr`, and the logged-in account uses the domain identity when applicable.                                                     | [`Domain_membership.png`](images/Domain_membership.png)                                                                                                                                                                                   
-| Inter-site networking | Run `ping 10.10.20.10` from the Bordeaux network to check connectivity to `DC02-ANG`. Use `nslookup DC02-ANG.novera.fr` to validate DNS name resolution. | The remote domain controller is reachable, and its hostname resolves to `10.10.20.10`.                                                                          | [`Intersite_networking.png`](images/Intersite_networking.png)                                                                                                                                                                             
-| Active Directory replication | On a domain controller, run `repadmin /replsummary`. | The replication summary reports no replication errors after synchronization has completed.                                                                      | [`AD_replication.png`](images/AD_replication.png)                                                                                                                                                                                         
-| Workstation Group Policy | Run `gpresult /r /scope computer` on `CL01-BDX` to inspect applied computer policies. Check the configured inactivity-lock setting and verify that the workstation locks after 15 minutes of inactivity. | The relevant computer policy is applied, and the inactivity lock behaves as configured.                                                                         | [`Workstation_GroupPolicy.png`](images/Workstation_GroupPolicy.png)                                                                                                                                                                       
-| Domain account lockout policy | On a domain controller, run `Get-ADDefaultDomainPasswordPolicy`. In the lab, a temporary test account was used to verify lockout after five incorrect password attempts. | The domain policy shows the configured threshold and lockout duration; the test account locks after the configured number of failed attempts.                   | [`Domain_account_lockout_policy.png`](images/Domain_account_lockout_policy.png) [`Account_lockedout.png`](images/Account_lockedout.png)                                                                                                                                                          
-| Delegated administration | Sign in to `CL01-BDX` with the delegated Bordeaux IT account. Create a test user under the authorized Bordeaux OU, modify its description, and reset its password. Attempting a password reset outside the delegated scope should be denied. | Authorized operations succeed within the tested scope, while the tested operation outside that scope is denied.                                                 | [`Delegated_administration_GRP.png`](images/Delegated_administration_GRP.png) [`Delegated_administration_BDX.png`](images/Delegated_administration_BDX.png) [`Delegated_administration_ANG.png`](images/Delegated_administration_ANG.png) 
-| SMB share access | Access `\\DC01-BDX\IT-Bordeaux` using an authorized member of `GG_Bordeaux_IT`, then create a test file. Repeat the access check with a non-IT account. | The authorized IT user can create a file; the tested non-IT account is denied access.                                                                           | [`SMB_share_access_GRP.png`](images/SMB_share_access_GRP.png) [`SMB_share_access_IT.png`](images/SMB_share_access_IT.png) [`SMB_share_access_NonIT.png`](images/SMB_share_access_NonIT.png)                                               
-| Employee import | Review `scripts/import-employees.ps1` and `tests/test-employees.ps1`. Run the test script in the intended lab environment when validating the import process. | The script and test file are present in the repository. Test execution results must be recorded separately before claiming that the import tests pass.          |[`Employee_import_SUCCESS.png`](images/Employee_import_SUCCESS.png)  [`Employee_import_FAIL.png`](images/Employee_import_FAIL.png) 
+The following table summarizes the validation procedures and their expected evidence.
+
+
+| Component | Validation procedure                                                                                                                                                                                                                         | Expected evidence | Screenshots                                                                                                                                                                                                                               |
+|---|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Domain membership | On `CL01-BDX`, run `whoami` and `systeminfo`.                                                                                                                                                                                                | The workstation belongs to `novera.fr`, and the logged-in account uses the domain identity when applicable.                                                     | [`Domain_membership.png`](images/Domain_membership.png)                                                                                                                                                                                   
+| Inter-site networking | Run `ping 10.10.20.10` from the Bordeaux. Use `nslookup DC02-ANG.novera.fr` to check DNS resolution.                                                                                                                                    | The remote domain controller is reachable, and its hostname resolves to `10.10.20.10`.                                                                          | [`Intersite_networking.png`](images/Intersite_networking.png)                                                                                                                                                                             
+| Active Directory replication | Run `repadmin /replsummary` on a domain controller.                                                                                                                                                                                         | The replication summary reports no replication errors after synchronization has completed.                                                                      | [`AD_replication.png`](images/AD_replication.png)                                                                                                                                                                                         
+| Workstation Group Policy |  Run `gpresult /r /scope computer` on CL01-BDX. Verify the inactivity-lock setting and test workstation locking after 15 minutes of inactivity.                                     | The relevant computer policy is applied, and the inactivity lock behaves as configured.                                                                         | [`Workstation_GroupPolicy.png`](images/Workstation_GroupPolicy.png)                                                                                                                                                                       
+| Domain account lockout policy | Run `Get-ADDefaultDomainPasswordPolicy` on a domain controller. Use a temporary test account to verify lockout after five incorrect password attempts.                                                                     | The domain policy shows the configured threshold and lockout duration; the test account locks after the configured number of failed attempts.                   | [`Domain_account_lockout_policy.png`](images/Domain_account_lockout_policy.png) [`Account_lockedout.png`](images/Account_lockedout.png)                                                                                                                                                          
+| Delegated administration | Sign in with the delegated Bordeaux IT account. Create a test user, modify its description, and reset its password within the authorized OU. Attempt a password reset outside that scope. | Authorized operations succeed within the tested scope, while the tested operation outside that scope is denied.                                                 | [`Delegated_administration_GRP.png`](images/Delegated_administration_GRP.png) [`Delegated_administration_BDX.png`](images/Delegated_administration_BDX.png) [`Delegated_administration_ANG.png`](images/Delegated_administration_ANG.png) 
+| SMB share access | Access `\\DC01-BDX\IT-Bordeaux` using an authorized member of `GG_Bordeaux_IT`, then create a test file. Repeat the access check with a non-IT account.                                                                                      | The authorized IT user can create a file; the tested non-IT account is denied access.                                                                           | [`SMB_share_access_GRP.png`](images/SMB_share_access_GRP.png) [`SMB_share_access_IT.png`](images/SMB_share_access_IT.png) [`SMB_share_access_NonIT.png`](images/SMB_share_access_NonIT.png)                                               
+| Employee import | Review `scripts/import-employees.ps1` and `tests/test-employees.ps1`. Run the test script in the intended lab environment when validating the import process.                                                                                | The script and test file are present in the repository. Test execution results must be recorded separately before claiming that the import tests pass.          |[`Employee_import_SUCCESS.png`](images/Employee_import_SUCCESS.png)  [`Employee_import_FAIL.png`](images/Employee_import_FAIL.png) 
 
 These results document the functional checks performed in this lab. They do not constitute a complete production-readiness, security-audit, or disaster-recovery assessment.
 
@@ -251,17 +240,11 @@ These results document the functional checks performed in this lab. They do not 
 │   ├── employees.json
 │   ├── references.json
 │   └── roles.json
-├── docs/
-│   ├── images/
-│   │   └── DNS_manager.png
-│   │   └── GPO_strategies.png
-│   │   └── Group_delegation_ITAdmins.png
-│   │   └── ITFolder_permissions.png
-│   │   └── Network_access_validation.png
-│   │   └── Network_diagramm.png
-│   │   └── OU_structure.png
-│   │   └── Server_replication_results.png
-│   │   └── Sites_structure.png
+├── images/
+│   └── Account_lockedout.png
+│   └── AD_replication.png
+│   └── [...]
+│   └── Workstation_GroupPolicy.png
 ├── scripts/
 │   └── import-employees.ps1
 ├── tests/
@@ -272,12 +255,12 @@ These results document the functional checks performed in this lab. They do not 
 
 ### Directory Overview
 
-| Path | Purpose |
-|---|---|
-| `data/` | Employee data and reference data used by the import process |
-| `docs/` | Documentation covering delegated administration, user-account management, and network share permissions |
-| `scripts/` | PowerShell scripts used to automate administrative tasks |
-| `tests/` | Tests for employee import functionality |
+| Path        | Purpose                                                                  |
+|-------------|--------------------------------------------------------------------------|
+| `data/`     | Employee data and reference data used by the import process              |
+| `images/`   | Screenshots used as evidence demonstration                               |
+| `scripts/`  | PowerShell scripts used to automate administrative tasks                 |
+| `tests/`    | Tests for employee import functionality                                  |
 | `README.md` | Project overview, architecture, deployment scope, and validation results |
 
 <br/>  
